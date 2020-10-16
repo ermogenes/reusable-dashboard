@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reusable Dashboard - Example</title>
+    <link rel="stylesheet" href="example-style.css">
+    <link rel="stylesheet" href="./component/dash-board.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.1/styles/xcode.min.css" integrity="sha512-ybdAWCxicaDEY4FipBITKDwSRqSDUcV1pPngUvjnCliYYU42rmMvt5obpvCZp7xCEpNU0OKIh6M60VGCVH1Z/w==" crossorigin="anonymous" />
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous"> -->
+</head>
+<body>
+    <header>Reusable Dashboard - Example</header>
+    <div>
+        <aside></aside>
+        <div id="dash-board">
+            <header>
+                <div class="title"></div>
+                <div class="config-button"><i class="fas fa-cog fa-rotate-90" title="Configure"></i></div>
+            </header>
+            <div class="spinner"></div>
+            <div class="cards"></div>
+            <div class="configuration">
+                <h4>Configuration</h4>
+                <form>
+                    <label for="dashboardHeaderText">Header Text</label>
+                    <input type="text" id="dashboardHeaderText" name="dashboardHeaderText">
+
+                    <label for="dashboardFooterText">Footer Text</label>
+                    <input type="text" id="dashboardFooterText" name="dashboardFooterText">
+
+                    <div>
+                        <button type="submit">Ok</button>
+                    </div>
+                </form>
+
+                <h4>Cards</h4>
+                <div class="cards-configuration">
+                    <div class="list">
+                        <label for="cards-list">Select a card</label>
+                        <select name="cards-list" id="cards-list" size="8">
+                            <option value="1">teste</option>
+                        </select>
+                        <button>New card</button>
+                    </div>
+                    <div class="card-input">
+                        <h4>Input</h4>
+                        <form>
+                            <label for="input-type">Type</label>
+                            <select name="input-type" id="input-type">
+                                <option value="text">Text</option>
+                            </select>
+
+                            <label for="input-label">Label</label>
+                            <input type="text" id="input-label" name="input-label">
+
+                            <label for="input-name">Field name</label>
+                            <input type="text" id="input-name" name="input-name" readonly>
+
+
+                            <div><button>Save</button></div>
+                        </form>
+                        <h4>Inputs</h4>
+                        <table border>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Label</th>
+                                    <th>Field Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>text</td>
+                                    <td>Client ID</td>
+                                    <td>client-id-</td>
+                                    <td>Edit | Delete</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>                    
+                    <div class="card-config">
+                        <h4>Data ingestion</h4>
+                        <form>
+                            <div>Card fields</div>
+
+
+                            <label for="endpoint-url">Endpoint URL template:</label>
+                            <input type="text" name="endpoint-url" id="endpoint-url" value="https://endpoint.com:5555/api/client/${client-id-}">
+                            
+                            <label for="endpoint-verb">Endpoint VERB:</label>
+                            <select name="endpoint-verb" id="endpoint-verb">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                            </select>
+
+                            <label for="endpoint-body-type">Body type:</label>
+                            <select name="endpoint-body-type" id="endpoint-body-type">
+                                <option value="" selected>-- no body --</option>
+                                <option value="JSON">JSON</option>
+                                <option value="GraphQL">GraphQL</option>
+                            </select>
+
+                            <label for="endpoint-body">Body template:</label>
+                            <pre><code contenteditable="true" class="hljs json" id="endpoint-body">{
+    "header": "Dashboard Example 01 header",
+    "footer": "Dashboard Example 01 footer",
+    "cards": [
+        {
+            "order": 0,
+            "title": "Card 01",
+            "header": "Card 01 header",
+            "url": "./data/card-01.json",
+            "footer": "card-01",
+            "baseSize": "200px"
+        },
+        {
+            "order": 1,
+            "title": "Card 02",
+            "url": "./data/card-02.json"
+        },
+        {
+            "order": 2,
+            "title": "Card 03",
+            "baseSize": "300px",
+            "url": "./data/card-03.json"
+        }
+    ]
+}</code></pre>
+
+                            <div><button type="submit">Ok</button></div>
+                        </form>
+                    </div>
+                    <div class="card-output">
+                        <h4>Visualization</h4>
+                        <form>
+
+                            <label for="viz-type">Type:</label>
+                            <select name="viz-type" id="viz-type">
+                                <option value="text">Text</option>
+                                <option value="pie">Pie Chart</option>
+                            </select>
+
+                            <h5>Text</h5>
+                            <label for="viz-text-text-property">Text property</label>
+                            <select name="viz-text-text-property" id="viz-text-text-property">
+                                <option value="">xyz</option>
+                                <option value="">jwhgj</option>
+                                <option value="">khkh</option>
+                            </select>
+
+                            <label for="viz-text-text-template">Text template</label>
+                            <input type="text" name="viz-text-text-template" id="viz-text-text-template" value="Total: ${value} records">
+                                                        
+                            
+
+                            <h5>Pie</h5>
+                            <label for="viz-pie-object-array-property">Object array property</label>
+                            <select name="viz-pie-object-array-property" id="viz-pie-object-array-property">
+                                <option value="">xyz</option>
+                                <option value="">jwhgj</option>
+                                <option value="">khkh</option>
+                            </select>
+                            <label for="viz-pie-label-property">Label property</label>
+                            <select name="viz-pie-label-property" id="viz-pie-label-property">
+                                <option value="">xyz.sdfsd</option>
+                                <option value="">xyz.sdfsd2</option>
+                                <option value="">xyz.sdfsd3</option>
+                            </select>
+                            <label for="viz-pie-value-property">Value property</label>
+                            <select name="viz-pie-value-property" id="viz-pie-value-property">
+                                <option value="">xyz.sdfsd</option>
+                                <option value="">xyz.sdfsd2</option>
+                                <option value="">xyz.sdfsd3</option>
+                            </select>
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+            <footer></footer>
+        </div>
+        <aside></aside>
+    </div>
+    <footer></footer>
+    
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.1/highlight.min.js" integrity="sha512-Ypjm0o7jOxAd4hpdoppSEN0TQOC19UtPAqD+4s5AlXmUvbmmS/YMxYqAqarQYyxTnB6/rqip9qcxlNB/3U9Wdg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.1/languages/json.min.js" integrity="sha512-FoN8JE+WWCdIGXAIT8KQXwpiavz0Mvjtfk7Rku3MDUNO0BDCiRMXAsSX+e+COFyZTcDb9HDgP+pM2RX12d4j+A==" crossorigin="anonymous"></script>
+    <script src="config.js"></script>
+    <script src="./component/index.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

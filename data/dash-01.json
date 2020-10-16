@@ -1,0 +1,25 @@
+{
+    "header": "Dashboard Example 01 header",
+    "footer": "Dashboard Example 01 footer",
+    "cards": [
+        {
+            "order": 0,
+            "title": "Card 01",
+            "header": "Card 01 header",
+            "url": "./data/card-01.json",
+            "footer": "card-01",
+            "baseSize": "200px"
+        },
+        {
+            "order": 1,
+            "title": "Card 02",
+            "url": "./data/card-02.json"
+        },
+        {
+            "order": 2,
+            "title": "Card 03",
+            "baseSize": "300px",
+            "url": "./data/card-03.json"
+        }
+    ]
+}

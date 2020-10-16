@@ -1,0 +1,90 @@
+#dash-board {
+    flex: 1;
+
+    display: flex;
+    flex-flow: column;
+
+    overflow: hidden;
+}
+
+#dash-board > header,
+#dash-board > footer {
+    flex: 0 1 auto;
+    margin: 5px;
+    padding: 5px;
+}
+
+#dash-board > header {
+    display: flex;
+    justify-content: space-between;
+}
+
+#dash-board > .cards {
+    flex: 1;
+
+    display: flex;
+    flex-flow: row wrap;
+    align-content: flex-start;
+}
+
+#dash-board > .cards > .card {
+    flex: 0 0 auto;
+    margin: 5px;
+    padding: 5px;
+
+    display: flex;
+    flex-flow: column;
+}
+
+#dash-board > .cards > .card > * {
+    flex: 1;
+}
+
+#dash-board > .cards > .card > header,
+#dash-board > .cards > .card > footer {
+    flex: 0 1 auto;
+}
+
+#dash-board > .cards > .card > header {
+    font-weight: bold;
+}
+
+#dash-board > .cards > .card > footer {
+    font-style: italic;
+}
+
+#dash-board > .cards > .card > article {
+    flex: 1;
+    font-family: monospace;
+}
+
+#dash-board > .configuration {
+    flex: 1;
+
+    margin: 5px;
+    padding: 5px;
+    
+    display: flex;
+    flex-flow: column;
+}
+
+#dash-board > .configuration form {
+    display: flex;
+    flex-flow: column;
+}
+
+#dash-board > .configuration .cards-configuration {
+    display: flex;
+}
+
+#dash-board > .configuration .cards-configuration > * {
+    flex: 1;
+
+    display: flex;
+    flex-flow: column;
+}
+
+#dash-board > .configuration .cards-configuration > .list {
+    flex: 0 1 200px;
+    margin-right: 10px;
+}

@@ -1,0 +1,54 @@
+/* Example styles: not necessary, use yours */
+
+body, div, aside, footer, header {
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-flow: column;
+    justify-content: stretch;
+    align-items: stretch;
+    min-height: 100vh;
+    background-color: #FFF4E4;
+}
+
+body > * {
+    flex: 1;
+}
+
+body > header,
+body > footer {
+    flex: 0 1 50px;
+}
+
+body > div {
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+}
+
+body > div > aside {
+    flex: 0 1 100px;
+}
+
+
+
+
+#dash-board {
+    background-color: #fff;
+}
+
+.card {
+    border: 1px solid black;
+}
+
+.config-button {
+    color: #999;
+    cursor: pointer;
+}
+
+#endpoint-body {
+    min-height: 200px;
+    border: 1px solid black;
+}
