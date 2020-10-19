@@ -26,29 +26,38 @@ const getConfigureButton = () => getDashboardContainer().querySelector('.config-
 const getDashboardHeaderTitle = () => getDashboardContainer().querySelector('header > .title');
 const getDashboardFooter = () => getDashboardContainer().querySelector('footer');
 
-
 const loadCard = async (card) => {
-    return fetch(card.url)
+    return fetch(card.ingestion.endpoint.urlTemplate)
         .then((response) => response.json())
         .then((cardData) => {
-            const cardContent = JSON.stringify(cardData, null, 2);
+            let cardEvaluation = {markup: '', script: ''};
 
-            const cardTemplate =
-                `<header>${card.header || card.title || ''}</header>
-                <article>${cardContent || ''}</article>
-                <footer>${card.footer || ''}</footer>`;
+            switch (card.visualization?.type) {
+                case "text":
+                    cardEvaluation = getTextCard(card, cardData);
+                    break;
+                case "pie":
+                    cardEvaluation = getPieCard(card, cardData);
+                    break;
             
+                default:
+                    break;
+            }
+            
+            const cardsContainer = getCardsContainer();
+
             const cardTag = document.createElement('div');
             cardTag.classList.add('card');
-            cardTag.innerHTML = cardTemplate;
+            cardTag.innerHTML = cardEvaluation.markup;
+            cardsContainer.appendChild(cardTag);
+            
             cardTag.style.order = card.order;
             cardTag.style.flexBasis = card.baseSize;
             cardTag.style.width = card.baseSize;
 
-            cardTag.dataset.config = cardContent;
+            cardTag.dataset.config = JSON.stringify(cardData);
 
-            const cardsContainer = getCardsContainer();
-            cardsContainer.appendChild(cardTag);
+            eval(cardEvaluation.script);
         });
 };
 
@@ -74,11 +83,6 @@ const configure = () => {
 
     const configData = JSON.parse(getDashboardContainer().dataset.config);
     console.log(configData);
-
-    
-
-    // const cards = getCardsContainer();
-    // const configuration = getConfigurationContainer();
 
     document.querySelectorAll('code').forEach((block) => {
       hljs.highlightBlock(block);
@@ -108,6 +112,68 @@ const loadDashboard = () => {
         .then(() => {
             getSpinner().hidden = true;
         });
+};
+
+const getPropertyFromObject = (p, o) => p.split('.').reduce((x, y) => x[y], o);
+
+const getTextCard = (config, data) => {
+    const content = {
+        title: config.title ,
+        header: config.header,
+        footer: config.footer,
+        text: config.visualization?.text?.template.interpolate(data),
+    };
+
+    const markup =`
+<header>${content.header || content.title || 'no title'}</header>
+<article>${content.text || 'no text'}</article>
+<footer>${content.footer || 'no footer'}</footer>`;
+
+    const script = ``;
+    
+    return { markup, script };
+};
+
+const getPieCard = (config, data) => {
+    const content = {
+        title: config.title ,
+        header: config.header,
+        footer: config.footer,
+        objectArray: getPropertyFromObject(config.visualization?.pie?.objectArray, data),
+        labelProperty: config.visualization?.pie?.labelProperty,
+        valueProperty: config.visualization?.pie?.valueProperty,
+    };
+
+    const dataColumns = [];
+    content.objectArray.forEach((line) => {
+        let i = dataColumns.findIndex(targetLine => targetLine[0] === line[content.labelProperty]);
+        if (i < 0) {
+            dataColumns.push([line[content.labelProperty]])
+            i = dataColumns.length -1;
+        }
+
+        dataColumns[i].push(!line[content.valueProperty] ? 1 : line[content.valueProperty]);
+    });
+  
+    const cardId = 'card-c3-' +  Math.round(Math.random()*100000);
+
+    const markup =`
+<header>${content.header || content.title || ''}</header>
+<article id="${cardId}"></article>
+<footer>${content.footer || ''}</footer>
+`;
+
+    const script = `
+    c3.generate({
+        bindto: '#${cardId}',
+        data: {
+            type: 'pie',
+            columns: ${JSON.stringify(dataColumns)}
+        }
+    });
+`;
+
+    return { markup, script };
 };
 
 document.addEventListener('DOMContentLoaded', () => {

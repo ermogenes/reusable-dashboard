@@ -1,0 +1,27 @@
+{
+    "date": "",
+    "meta": {
+        "asd": "",
+        "sdfgerge": ""
+    },
+    "result": {
+        "nome": "teste",
+        "registros": [
+            {
+                "subprefeitura": "Sé",
+                "quantidade": 500,
+                "ano": 2020
+            },
+            {
+                "subprefeitura": "Sé",
+                "quantidade": 400,
+                "ano": 2019
+            },
+            {
+                "subprefeitura": "Pinheiros",
+                "quantidade": 1000,
+                "ano": 2020
+            }
+        ]
+    }
+}

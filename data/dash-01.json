@@ -1,25 +1,112 @@
 {
-    "header": "Dashboard Example 01 header",
-    "footer": "Dashboard Example 01 footer",
+    "header": "Dashboard de exemplo 01 header",
+    "footer": "Dashboard de exemplo 01 footer",
     "cards": [
         {
             "order": 0,
-            "title": "Card 01",
-            "header": "Card 01 header",
-            "url": "./data/card-01.json",
-            "footer": "card-01",
-            "baseSize": "200px"
+            "title": "Teste de Card de Texto",
+            "baseSize": "200px",
+            "footer": "Prodam",
+            "input": {},
+            "ingestion": {
+                "endpoint": {
+                    "urlTemplate": "./data/card-text-01.json",
+                    "verb": "GET",
+                    "bodyType": "none"
+                }
+            },
+            "visualization": {
+                "type": "text",
+                "text": {
+                    "property": "result.nome",
+                    "template": "O nome é ${result.nome}!"
+                }
+            }
         },
         {
             "order": 1,
-            "title": "Card 02",
-            "url": "./data/card-02.json"
+            "title": "Teste de Card de Setores",
+            "baseSize": "200px",
+            "footer": "Dados de teste",
+            "input": {},
+            "ingestion": {
+                "endpoint": {
+                    "urlTemplate": "./data/card-pie-01.json",
+                    "verb": "GET",
+                    "bodyType": "none"
+                }
+            },
+            "visualization": {
+                "type": "pie",
+                "pie": {
+                    "objectArray": "result.registros",
+                    "labelProperty": "subprefeitura",
+                    "valueProperty": "quantidade"
+                }
+            }
         },
         {
             "order": 2,
-            "title": "Card 03",
-            "baseSize": "300px",
-            "url": "./data/card-03.json"
+            "title": "Seguidores",
+            "baseSize": "200px",
+            "footer": "from GitHub API",
+            "input": {},
+            "ingestion": {
+                "endpoint": {
+                    "urlTemplate": "https://api.github.com/users/ermogenes",
+                    "verb": "GET",
+                    "bodyType": "none"
+                }
+            },
+            "visualization": {
+                "type": "text",
+                "text": {
+                    "property": "followers",
+                    "template": "De ${name}: ${followers}!"
+                }
+            }
+        },
+        {
+            "order": 3,
+            "title": "Lançamentos do Metallica, por data",
+            "baseSize": "400px",
+            "footer": "from MusicBrainz API",
+            "input": {},
+            "ingestion": {
+                "endpoint": {
+                    "urlTemplate": "https://musicbrainz.org/ws/2/release-group?fmt=json&artist=65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab",
+                    "verb": "GET",
+                    "bodyType": "none"
+                }
+            },
+            "visualization": {
+                "type": "pie",
+                "pie": {
+                    "objectArray": "release-groups",
+                    "labelProperty": "first-release-date"
+                }
+            }
+        },
+        {
+            "order": 4,
+            "title": "Artistas contendo a palavra 'the', por país",
+            "baseSize": "500px",
+            "footer": "from MusicBrainz API",
+            "input": {},
+            "ingestion": {
+                "endpoint": {
+                    "urlTemplate": "https://musicbrainz.org/ws/2/artist?fmt=json&query=the",
+                    "verb": "GET",
+                    "bodyType": "none"
+                }
+            },
+            "visualization": {
+                "type": "pie",
+                "pie": {
+                    "objectArray": "artists",
+                    "labelProperty": "country"
+                }
+            }
         }
     ]
 }

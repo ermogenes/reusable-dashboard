@@ -1,5 +1,0 @@
-{
-    "type": "pieChart",
-    "data": [12, 17, 25, 1, 55],
-    "labels": ["abc", "xyz", "npc", "pnj", "rpg"]
-}
