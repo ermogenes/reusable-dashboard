@@ -7,10 +7,13 @@
     <link rel="stylesheet" href="example-style.css">
     <link rel="stylesheet" href="./component/dash-board.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.1/styles/xcode.min.css" integrity="sha512-ybdAWCxicaDEY4FipBITKDwSRqSDUcV1pPngUvjnCliYYU42rmMvt5obpvCZp7xCEpNU0OKIh6M60VGCVH1Z/w==" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css" integrity="sha512-cznfNokevSG7QPA5dZepud8taylLdvgr0lDqw/FEZIhluFsSwyvS81CMnRdrNSKwbsmc43LtRd2/WMQV+Z85AQ==" crossorigin="anonymous" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.1/highlight.min.js" integrity="sha512-Ypjm0o7jOxAd4hpdoppSEN0TQOC19UtPAqD+4s5AlXmUvbmmS/YMxYqAqarQYyxTnB6/rqip9qcxlNB/3U9Wdg==" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.1/languages/json.min.js" integrity="sha512-FoN8JE+WWCdIGXAIT8KQXwpiavz0Mvjtfk7Rku3MDUNO0BDCiRMXAsSX+e+COFyZTcDb9HDgP+pM2RX12d4j+A==" crossorigin="anonymous"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js" integrity="sha512-GoORoNnxst42zE3rYPj4bNBm0Q6ZRXKNH2D9nEmNvVF/z24ywVnijAWVi/09iBiVDQVf3UlZHpzhAJIdd9BXqw==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-github.min.js" integrity="sha512-k3o+fOuDq/z/JwInSTkoRXXimKTOn9w4xN5VuXVp8h/ZxS5DIYjCdqoO0/3x8x0/30pk5ci5DPWqisHUKIWtgg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-json.min.js" integrity="sha512-VZZMcLUCIF2nfbd/WddhQvF0/K/hWtKLTMEEc3/ouKX3ceCgEEPJR/c1buV/XDm1lMJrP9ZZ4izN+3VUZxCGHA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-graphqlschema.min.js" integrity="sha512-dugcgmNWgWVd4+TE65aGHRkVEGORwqSoeBVQWFVYXR/3p+ZrqGwoIizNN56++ECzjkGwE8iJ6y5BmxJI7No4cA==" crossorigin="anonymous"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js" integrity="sha512-FHsFVKQ/T1KWJDGSbrUhTJyS1ph3eRrxI228ND0EGaEp6v4a/vGwPWd3Dtd/+9cI7ccofZvl/wulICEurHN1pg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js" integrity="sha512-+IpCthlNahOuERYUSnKFjzjdKXIbJ/7Dd6xvUp+7bEw0Jp2dg6tluyxLs+zq9BMzZgrLv8886T4cBSqnKiVgUw==" crossorigin="anonymous"></script>
 </head>
@@ -21,17 +24,20 @@
         <div id="dash-board">
             <header>
                 <div class="title"></div>
-                <div class="config-button"><i class="fas fa-cog fa-rotate-90" title="Configure"></i></div>
+                <div class="buttons">
+                    <div class="refresh-button"><i class="fas fa-sync fa-rotate-90" title="Reload"></i></div>
+                    <div class="config-button"><i class="fas fa-cog fa-rotate-90" title="Configure"></i></div>
+                </div>
             </header>
             <div class="spinner"></div>
             <div class="cards"></div>
             <div class="configuration">
-                <h4>Configuration</h4>
-                <form>
-                    <label for="dashboardHeaderText">Header Text</label>
+                <h4>General configuration</h4>
+                <form id="form-config-dashboard">
+                    <label for="dashboardHeaderText">Dashboard Header Text</label>
                     <input type="text" id="dashboardHeaderText" name="dashboardHeaderText">
 
-                    <label for="dashboardFooterText">Footer Text</label>
+                    <label for="dashboardFooterText">Dashboard Footer Text</label>
                     <input type="text" id="dashboardFooterText" name="dashboardFooterText">
 
                     <div>
@@ -40,7 +46,7 @@
                 </form>
 
                 <h4>Cards</h4>
-                <div class="cards-configuration">
+                <div id="cards-configuration">
                     <div class="list">
                         <label for="cards-list">Select a card</label>
                         <select name="cards-list" id="cards-list" size="8">
@@ -50,7 +56,7 @@
                     </div>
                     <div class="card-input">
                         <h4>Input</h4>
-                        <form>
+                        <form id="form-card-input">
                             <label for="input-type">Type</label>
                             <select name="input-type" id="input-type">
                                 <option value="text">Text</option>
@@ -87,10 +93,7 @@
                     </div>                    
                     <div class="card-config">
                         <h4>Data ingestion</h4>
-                        <form>
-                            <div>Card fields</div>
-
-
+                        <form id="form-card-ingestion">
                             <label for="endpoint-url">Endpoint URL template:</label>
                             <input type="text" name="endpoint-url" id="endpoint-url" value="https://endpoint.com:5555/api/client/${client-id-}">
                             
@@ -100,46 +103,26 @@
                                 <option value="POST">POST</option>
                             </select>
 
-                            <label for="endpoint-body-type">Body type:</label>
-                            <select name="endpoint-body-type" id="endpoint-body-type">
-                                <option value="" selected>-- no body --</option>
-                                <option value="JSON">JSON</option>
-                                <option value="GraphQL">GraphQL</option>
-                            </select>
+                            <div id="endpoint-body-type-group">
+                                <label for="endpoint-body-type">Body type:</label>
+                                <select name="endpoint-body-type" id="endpoint-body-type">
+                                    <option value="none" selected>-- no body --</option>
+                                    <option value="json">JSON</option>
+                                    <option value="graphql">GraphQL</option>
+                                </select>
 
-                            <label for="endpoint-body">Body template:</label>
-                            <pre><code contenteditable="true" class="hljs json" id="endpoint-body">{
-    "header": "Dashboard Example 01 header",
-    "footer": "Dashboard Example 01 footer",
-    "cards": [
-        {
-            "order": 0,
-            "title": "Card 01",
-            "header": "Card 01 header",
-            "url": "./data/card-01.json",
-            "footer": "card-01",
-            "baseSize": "200px"
-        },
-        {
-            "order": 1,
-            "title": "Card 02",
-            "url": "./data/card-02.json"
-        },
-        {
-            "order": 2,
-            "title": "Card 03",
-            "baseSize": "300px",
-            "url": "./data/card-03.json"
-        }
-    ]
-}</code></pre>
+                                <div id="endpoint-body-template-group">
+                                    <label for="endpoint-body-template">Body template:</label>
+                                    <div id="endpoint-body-template"></div>
+                                </div>
+                            </div>
 
-                            <div><button type="submit">Ok</button></div>
+                            <div><button type="submit">Save</button></div>
                         </form>
                     </div>
                     <div class="card-output">
                         <h4>Visualization</h4>
-                        <form>
+                        <form id="form-card-viz">
 
                             <label for="viz-type">Type:</label>
                             <select name="viz-type" id="viz-type">
@@ -147,44 +130,33 @@
                                 <option value="pie">Pie Chart</option>
                             </select>
 
-                            <h5>Text</h5>
-                            <label for="viz-text-text-property">Text property</label>
-                            <select name="viz-text-text-property" id="viz-text-text-property">
-                                <option value="">xyz</option>
-                                <option value="">jwhgj</option>
-                                <option value="">khkh</option>
-                            </select>
+                            <div id="viz-type-text-group">
+                                <!-- <label for="viz-text-text-property">Text property</label>
+                                <input type="text" name="viz-text-text-property" id="viz-text-text-property"> -->
 
-                            <label for="viz-text-text-template">Text template</label>
-                            <input type="text" name="viz-text-text-template" id="viz-text-text-template" value="Total: ${value} records">
-                                                        
+                                <label for="viz-text-text-template">Text template</label>
+                                <input type="text" name="viz-text-text-template" id="viz-text-text-template" value="Total: ${value} records">
+                            </div>
                             
 
-                            <h5>Pie</h5>
-                            <label for="viz-pie-object-array-property">Object array property</label>
-                            <select name="viz-pie-object-array-property" id="viz-pie-object-array-property">
-                                <option value="">xyz</option>
-                                <option value="">jwhgj</option>
-                                <option value="">khkh</option>
-                            </select>
-                            <label for="viz-pie-label-property">Label property</label>
-                            <select name="viz-pie-label-property" id="viz-pie-label-property">
-                                <option value="">xyz.sdfsd</option>
-                                <option value="">xyz.sdfsd2</option>
-                                <option value="">xyz.sdfsd3</option>
-                            </select>
-                            <label for="viz-pie-value-property">Value property</label>
-                            <select name="viz-pie-value-property" id="viz-pie-value-property">
-                                <option value="">xyz.sdfsd</option>
-                                <option value="">xyz.sdfsd2</option>
-                                <option value="">xyz.sdfsd3</option>
-                            </select>
+                            <div id="viz-type-pie-group">
+                                <label for="viz-pie-object-array-property">Object array property</label>
+                                <input type="text" name="viz-pie-object-array-property" id="viz-pie-object-array-property">
+                                
+                                <label for="viz-pie-label-property">Label property</label>
+                                <input type="text" name="viz-pie-label-property" id="viz-pie-label-property">
+
+                                <label for="viz-pie-value-property">Value property</label>
+                                <input type="text" name="viz-pie-value-property" id="viz-pie-value-property">
+                            </div>
+
+                            <div><button type="submit">Save</button></div>
                         </form>
                     </div>
                     
                 </div>
             </div>
-            <footer></footer>
+            <footer class="dashfooter"></footer>
         </div>
         <aside></aside>
     </div>

@@ -12,13 +12,14 @@
                 "endpoint": {
                     "urlTemplate": "./data/card-text-01.json",
                     "verb": "GET",
-                    "bodyType": "none"
+                    "bodyType": "json",
+                    "bodyTemplate__": "{\"teste\": \"teste\"}"
                 }
             },
             "visualization": {
                 "type": "text",
                 "text": {
-                    "property": "result.nome",
+                    "property__": "result.nome",
                     "template": "O nome é ${result.nome}!"
                 }
             }
@@ -61,7 +62,7 @@
             "visualization": {
                 "type": "text",
                 "text": {
-                    "property": "followers",
+                    "property___": "followers",
                     "template": "De ${name}: ${followers}!"
                 }
             }
@@ -105,6 +106,27 @@
                 "pie": {
                     "objectArray": "artists",
                     "labelProperty": "country"
+                }
+            }
+        },
+        {
+            "order": 5,
+            "title": "Dados sobre o Brasil",
+            "baseSize": "300px",
+            "footer": "from GraphQL Countries List",
+            "input": {},
+            "ingestion": {
+                "endpoint": {
+                    "urlTemplate": "https://countries.trevorblades.com/",
+                    "verb": "POST",
+                    "bodyType": "graphql",
+                    "bodyTemplate": "{\r\ncountry(code:\"BR\"){\r\nname\r\nnative\r\ncapital\r\ncurrency\r\nlanguages{\r\ncode\r\nname\r\n}\r\n}\r\n}"
+                }
+            },
+            "visualization": {
+                "type": "text",
+                "text": {
+                    "template": "A capital do ${data.country.name} é ${data.country.capital}"
                 }
             }
         }

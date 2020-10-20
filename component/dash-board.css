@@ -19,6 +19,14 @@
   justify-content: space-between;
 }
 
+#dash-board > header > .buttons {
+  display: flex;
+}
+
+#dash-board > header > .buttons > * {
+  padding-left: 5px;
+}
+
 #dash-board > .cards {
   flex: 1;
 
@@ -72,18 +80,19 @@
   flex-flow: column;
 }
 
-#dash-board > .configuration .cards-configuration {
+#dash-board > .configuration #cards-configuration {
   display: flex;
 }
 
-#dash-board > .configuration .cards-configuration > * {
+#dash-board > .configuration #cards-configuration > *,
+  #dash-board > .configuration #cards-configuration div {
   flex: 1;
 
   display: flex;
   flex-flow: column;
 }
 
-#dash-board > .configuration .cards-configuration > .list {
+#dash-board > .configuration #cards-configuration > .list {
   flex: 0 1 200px;
   margin-right: 10px;
 }

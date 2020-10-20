@@ -44,12 +44,14 @@ body > div > aside {
   border: 1px solid black;
 }
 
-.config-button {
+.config-button,
+.refresh-button {
   color: #999;
   cursor: pointer;
 }
 
-#endpoint-body {
+#endpoint-body-template {
   min-height: 200px;
+  width: 100%;
   border: 1px solid black;
 }
