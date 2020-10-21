@@ -9,13 +9,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css" integrity="sha512-cznfNokevSG7QPA5dZepud8taylLdvgr0lDqw/FEZIhluFsSwyvS81CMnRdrNSKwbsmc43LtRd2/WMQV+Z85AQ==" crossorigin="anonymous" />
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js" integrity="sha512-GoORoNnxst42zE3rYPj4bNBm0Q6ZRXKNH2D9nEmNvVF/z24ywVnijAWVi/09iBiVDQVf3UlZHpzhAJIdd9BXqw==" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-github.min.js" integrity="sha512-k3o+fOuDq/z/JwInSTkoRXXimKTOn9w4xN5VuXVp8h/ZxS5DIYjCdqoO0/3x8x0/30pk5ci5DPWqisHUKIWtgg==" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-json.min.js" integrity="sha512-VZZMcLUCIF2nfbd/WddhQvF0/K/hWtKLTMEEc3/ouKX3ceCgEEPJR/c1buV/XDm1lMJrP9ZZ4izN+3VUZxCGHA==" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-graphqlschema.min.js" integrity="sha512-dugcgmNWgWVd4+TE65aGHRkVEGORwqSoeBVQWFVYXR/3p+ZrqGwoIizNN56++ECzjkGwE8iJ6y5BmxJI7No4cA==" crossorigin="anonymous"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js" integrity="sha512-GoORoNnxst42zE3rYPj4bNBm0Q6ZRXKNH2D9nEmNvVF/z24ywVnijAWVi/09iBiVDQVf3UlZHpzhAJIdd9BXqw==" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-github.min.js" integrity="sha512-k3o+fOuDq/z/JwInSTkoRXXimKTOn9w4xN5VuXVp8h/ZxS5DIYjCdqoO0/3x8x0/30pk5ci5DPWqisHUKIWtgg==" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-json.min.js" integrity="sha512-VZZMcLUCIF2nfbd/WddhQvF0/K/hWtKLTMEEc3/ouKX3ceCgEEPJR/c1buV/XDm1lMJrP9ZZ4izN+3VUZxCGHA==" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-graphqlschema.min.js" integrity="sha512-dugcgmNWgWVd4+TE65aGHRkVEGORwqSoeBVQWFVYXR/3p+ZrqGwoIizNN56++ECzjkGwE8iJ6y5BmxJI7No4cA==" crossorigin="anonymous"></script> -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js" integrity="sha512-FHsFVKQ/T1KWJDGSbrUhTJyS1ph3eRrxI228ND0EGaEp6v4a/vGwPWd3Dtd/+9cI7ccofZvl/wulICEurHN1pg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js" integrity="sha512-+IpCthlNahOuERYUSnKFjzjdKXIbJ/7Dd6xvUp+7bEw0Jp2dg6tluyxLs+zq9BMzZgrLv8886T4cBSqnKiVgUw==" crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet" href="./monaco/min/vs/editor/editor.main.css"/>
+    <script>
+        var require = {
+            paths: { vs: './monaco/min/vs' },
+            // 'vs/nls': { availableLanguages: { '*': "pt-br" }} // need to translate
+        };
+    </script>
+    <script src="./monaco/min/vs/loader.js"></script>
+    <script src="./monaco/min/vs/editor/editor.main.nls.js"></script>
+    <script src="./monaco/min/vs/editor/editor.main.nls.pt-br.js"></script>
+    <script src="./monaco/min/vs/editor/editor.main.js"></script>
+
 </head>
 <body>
     <header>Reusable Dashboard - Example</header>
@@ -45,18 +59,44 @@
                     </div>
                 </form>
 
-                <h4>Cards</h4>
                 <div id="cards-configuration">
                     <div class="list">
+                        <h4>Cards</h4>
                         <label for="cards-list">Select a card</label>
                         <select name="cards-list" id="cards-list" size="8">
-                            <option value="1">teste</option>
+                            <option></option>
                         </select>
                         <button>New card</button>
+                    <div class="card-meta">
+                        <h4>Meta</h4>
+                        <form id="form-card-meta">
+                            <label for="meta-title">Title</label>
+                            <input type="text" id="meta-title" name="meta-title">
+
+                            <label for="meta-order">Order</label>
+                            <input type="number" id="meta-order" name="meta-order">
+
+                            <label for="meta-base-size">Base size (with CSS unit)</label>
+                            <input type="text" id="meta-base-size" name="meta-base-size">
+
+                            <label for="meta-footer">Footer</label>
+                            <input type="text" id="meta-footer" name="meta-footer">
+
+                            <div><button>Save</button></div>
+                        </form>
                     </div>
+                </div>
+
                     <div class="card-input">
-                        <h4>Input</h4>
                         <form id="form-card-input">
+                        <h4>Inputs</h4>
+                        <label for="card-inputs-list">Select an input</label>
+                        <select name="card-inputs-list" id="card-inputs-list" size="8">
+                            <option></option>
+                        </select>
+                        <button>New input</button>                        
+
+                        <h4>Input</h4>
                             <label for="input-type">Type</label>
                             <select name="input-type" id="input-type">
                                 <option value="text">Text</option>
@@ -66,30 +106,14 @@
                             <input type="text" id="input-label" name="input-label">
 
                             <label for="input-name">Field name</label>
-                            <input type="text" id="input-name" name="input-name" readonly>
+                            <input type="text" id="input-name" name="input-name">
 
+                            <label for="input-value">Value</label>
+                            <input type="text" id="input-value" name="input-value">
 
                             <div><button>Save</button></div>
                         </form>
-                        <h4>Inputs</h4>
-                        <table border>
-                            <thead>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>Label</th>
-                                    <th>Field Name</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>text</td>
-                                    <td>Client ID</td>
-                                    <td>client-id-</td>
-                                    <td>Edit | Delete</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        
                     </div>                    
                     <div class="card-config">
                         <h4>Data ingestion</h4>
@@ -116,7 +140,7 @@
                                     <div id="endpoint-body-template"></div>
                                 </div>
                             </div>
-
+                            
                             <div><button type="submit">Save</button></div>
                         </form>
                     </div>

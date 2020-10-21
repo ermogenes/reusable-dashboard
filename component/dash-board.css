@@ -80,19 +80,22 @@
   flex-flow: column;
 }
 
-#dash-board > .configuration #cards-configuration {
+#dash-board > .configuration > #cards-configuration {
   display: flex;
+  justify-content: space-between;
 }
 
-#dash-board > .configuration #cards-configuration > *,
-  #dash-board > .configuration #cards-configuration div {
+#dash-board > .configuration > #cards-configuration > *,
+#dash-board > .configuration > #cards-configuration > div,
+#form-card-viz > *, 
+#dash-board > .configuration > #cards-configuration > #endpoint-body-template-group > * {
   flex: 1;
 
   display: flex;
   flex-flow: column;
 }
 
-#dash-board > .configuration #cards-configuration > .list {
+#dash-board > .configuration #cards-configuration > * {
   flex: 0 1 200px;
-  margin-right: 10px;
+  margin: 5px;
 }

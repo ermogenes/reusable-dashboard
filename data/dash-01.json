@@ -7,19 +7,17 @@
             "title": "Teste de Card de Texto",
             "baseSize": "200px",
             "footer": "Prodam",
-            "input": {},
+            "input": [],
             "ingestion": {
                 "endpoint": {
                     "urlTemplate": "./data/card-text-01.json",
                     "verb": "GET",
-                    "bodyType": "json",
-                    "bodyTemplate__": "{\"teste\": \"teste\"}"
+                    "bodyType": "json"
                 }
             },
             "visualization": {
                 "type": "text",
                 "text": {
-                    "property__": "result.nome",
                     "template": "O nome é ${result.nome}!"
                 }
             }
@@ -29,7 +27,7 @@
             "title": "Teste de Card de Setores",
             "baseSize": "200px",
             "footer": "Dados de teste",
-            "input": {},
+            "input": [],
             "ingestion": {
                 "endpoint": {
                     "urlTemplate": "./data/card-pie-01.json",
@@ -51,10 +49,17 @@
             "title": "Seguidores",
             "baseSize": "200px",
             "footer": "from GitHub API",
-            "input": {},
+            "input": [
+                {
+                    "name": "username",
+                    "type": "text",
+                    "label": "Nome de usuário",
+                    "value": "torvalds"
+                }
+            ],
             "ingestion": {
                 "endpoint": {
-                    "urlTemplate": "https://api.github.com/users/ermogenes",
+                    "urlTemplate": "https://api.github.com/users/${username}",
                     "verb": "GET",
                     "bodyType": "none"
                 }
@@ -62,7 +67,6 @@
             "visualization": {
                 "type": "text",
                 "text": {
-                    "property___": "followers",
                     "template": "De ${name}: ${followers}!"
                 }
             }
@@ -72,10 +76,17 @@
             "title": "Lançamentos do Metallica, por data",
             "baseSize": "400px",
             "footer": "from MusicBrainz API",
-            "input": {},
+            "input": [
+                {
+                    "name": "artistId",
+                    "type": "text",
+                    "label": "ID do artista",
+                    "value": "65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab"
+                }
+            ],
             "ingestion": {
                 "endpoint": {
-                    "urlTemplate": "https://musicbrainz.org/ws/2/release-group?fmt=json&artist=65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab",
+                    "urlTemplate": "https://musicbrainz.org/ws/2/release-group?fmt=json&artist=${artistId}",
                     "verb": "GET",
                     "bodyType": "none"
                 }
@@ -93,10 +104,17 @@
             "title": "Artistas contendo a palavra 'the', por país",
             "baseSize": "500px",
             "footer": "from MusicBrainz API",
-            "input": {},
+            "input": [
+                {
+                    "name": "palavra",
+                    "type": "text",
+                    "label": "Palavra a buscar",
+                    "value": "the"
+                }
+            ],
             "ingestion": {
                 "endpoint": {
-                    "urlTemplate": "https://musicbrainz.org/ws/2/artist?fmt=json&query=the",
+                    "urlTemplate": "https://musicbrainz.org/ws/2/artist?fmt=json&query=${palavra}",
                     "verb": "GET",
                     "bodyType": "none"
                 }
@@ -114,7 +132,7 @@
             "title": "Dados sobre o Brasil",
             "baseSize": "300px",
             "footer": "from GraphQL Countries List",
-            "input": {},
+            "input": [],
             "ingestion": {
                 "endpoint": {
                     "urlTemplate": "https://countries.trevorblades.com/",
@@ -127,6 +145,34 @@
                 "type": "text",
                 "text": {
                     "template": "A capital do ${data.country.name} é ${data.country.capital}"
+                }
+            }
+        },
+        {
+            "order": 6,
+            "title": "Dados sobre um país",
+            "baseSize": "300px",
+            "footer": "from GraphQL Countries Lists",
+            "input": [
+                {
+                    "type": "text",
+                    "label": "País",
+                    "name": "codigoDoPais",
+                    "value": "US"
+                }
+            ],
+            "ingestion": {
+                "endpoint": {
+                    "urlTemplate": "https://countries.trevorblades.com/",
+                    "verb": "POST",
+                    "bodyType": "graphql",
+                    "bodyTemplate": "query minhaQuery($codigoDoPais: ID!){\r\n  country(code: $codigoDoPais){\r\n    name\r\n    native\r\n    capital\r\n    currency\r\n    languages{\r\n      code\r\n      name\r\n    }\r\n  }\r\n}"
+                }
+            },
+            "visualization": {
+                "type": "text",
+                "text": {
+                    "template": "País: ${data.country.name}<br>Capital: ${data.country.capital}<br>Língua principal: ${data.country.languages[0].name}"
                 }
             }
         }

@@ -30,6 +30,19 @@ const getConfigDashboardFooterField = () => getDashboardConfigForm().querySelect
 const getCardsConfigForm = () => getDashboardContainer().querySelector('#cards-configuration');
 const getConfigCardsListField = () => getCardsConfigForm().querySelector("#cards-list");
 
+const getCardMetaForm = () => getDashboardContainer().querySelector('#form-card-meta');
+const getCardMetaTitleField = () => getCardMetaForm().querySelector("#meta-title");
+const getCardMetaOrderField = () => getCardMetaForm().querySelector("#meta-order");
+const getCardMetaBaseSizeField = () => getCardMetaForm().querySelector("#meta-base-size");
+const getCardMetaFooterField = () => getCardMetaForm().querySelector("#meta-footer");
+
+const getCardInputConfigForm = () => getDashboardContainer().querySelector('#form-card-input');
+const getConfigCardInputsListField = () => getCardInputConfigForm().querySelector('#card-inputs-list');
+const getConfigCardInputTypeField = () => getCardInputConfigForm().querySelector('#input-type');
+const getConfigCardInputLabelField = () => getCardInputConfigForm().querySelector('#input-label');
+const getConfigCardInputNameField = () => getCardInputConfigForm().querySelector('#input-name');
+const getConfigCardInputValueField = () => getCardInputConfigForm().querySelector('#input-value');
+
 const getCardIngestionConfigForm = () => getDashboardContainer().querySelector('#form-card-ingestion');
 const getConfigCardIngestionEndpointUrlField = () => getCardIngestionConfigForm().querySelector("#endpoint-url");
 const getConfigCardIngestionEndpointVerbField = () => getCardIngestionConfigForm().querySelector("#endpoint-verb");
@@ -50,9 +63,19 @@ const getRefreshButton = () => getDashboardContainer().querySelector('.refresh-b
 const getDashboardHeaderTitle = () => getDashboardContainer().querySelector('header > .title');
 const getDashboardFooter = () => getDashboardContainer().querySelector('.dashfooter');
 
+const getCard = (cardObj) => getInputCardFields().querySelector(`#card-${cardObj.title.slugify()}`);
+const getInputField = (cardObj, fieldObj) => getCard(cardObj).querySelector(`#card-input-${cardObj.title.slugify()}-${fieldObj.name.slugify()}`);
+// const getInputFields = (card) => card.querySelectorAll('.card-inputs');
+
 const loadCard = async (card) => {
 
     const request = {};
+
+    let vars = {};
+    if (card.input.length > 0) {
+        card.input.forEach(i => vars[i.name] = i.value);
+    }
+
     request.method = card.ingestion.endpoint.verb;
     
     if (request.method === "POST") {
@@ -62,19 +85,22 @@ const loadCard = async (card) => {
         if (card.ingestion.endpoint.bodyType === "json") {
             request.body = card.ingestion.endpoint.bodyTemplate ?
             JSON.stringify(
-                card.ingestion.endpoint.bodyTemplate.interpolate(card.input)
+                card.ingestion.endpoint.bodyTemplate.interpolate(vars)
             ) : null;
         } else if (card.ingestion.endpoint.bodyType === "graphql") {
             request.body = card.ingestion.endpoint.bodyTemplate ?
             JSON.stringify(
-                { query: 
-                `${card.ingestion.endpoint.bodyTemplate.interpolate(card.input)}`
+                {   query: 
+                        `${card.ingestion.endpoint.bodyTemplate.interpolate(vars)}`,
+                    variables: vars
                 }
             ) : null;
         }
     }
 
-    return fetch(card.ingestion.endpoint.urlTemplate, request)
+    const url = card.ingestion.endpoint.urlTemplate.interpolate(vars);
+
+    return fetch(url, request)
         .then((response) => response.json())
         .then((cardData) => {
             let cardEvaluation = {markup: '', script: ''};
@@ -94,6 +120,7 @@ const loadCard = async (card) => {
             const cardsContainer = getCardsContainer();
 
             const cardTag = document.createElement('div');
+            cardTag.id = `card-${card.title.slugify()}`;
             cardTag.classList.add('card');
             cardTag.innerHTML = cardEvaluation.markup;
             cardsContainer.appendChild(cardTag);
@@ -141,11 +168,51 @@ const loadConfigToForms = () => {
         cardOption.value = i;
         getConfigCardsListField().options.add(cardOption);
     }
+    getConfigCardsListField().selectedIndex = 0;
+    getConfigCardsListField().dispatchEvent(new Event('change'));
+};
+
+const loadCardInputFields = () => {
+    const cardIndex = getConfigCardsListField().selectedIndex;
+    const card = DashboardConfig.cards[cardIndex];
+    const inputIndex = getConfigCardInputsListField().selectedIndex;
+
+    if (inputIndex >= 0) {
+        const input = card.input[inputIndex];
+
+        getConfigCardInputTypeField().value = input.type || '';
+        getConfigCardInputLabelField().value = input.label || '';
+        getConfigCardInputNameField().value = input.name || '';
+        getConfigCardInputValueField().value = input.value || '';
+    } else {
+        getConfigCardInputTypeField().value = '';
+        getConfigCardInputLabelField().value = '';
+        getConfigCardInputNameField().value = '';
+        getConfigCardInputValueField().value = '';
+    }
+
 };
 
 const loadCardConfigurationFields = () => {
     const cardIndex = getConfigCardsListField().selectedIndex;
     const card = DashboardConfig.cards[cardIndex];
+
+    getCardMetaTitleField().value = card.title;
+    getCardMetaOrderField().value = card.order;
+    getCardMetaBaseSizeField().value = card.baseSize;
+    getCardMetaFooterField().value = card.footer;
+
+    const inputsSelect = getConfigCardInputsListField();
+    [...getConfigCardInputsListField().options].forEach(o => getConfigCardInputsListField().options.remove(o));
+    for(let i = 0; i <= card.input.length -1; i++) {
+        const input = card.input[i];
+        const inputOption = document.createElement("option");
+        inputOption.text = input.label;
+        inputOption.value = i;
+        getConfigCardInputsListField().options.add(inputOption);
+    }
+    getConfigCardInputsListField().selectedIndex = 0;
+    getConfigCardInputsListField().dispatchEvent(new Event('change'));
     
     getConfigCardIngestionEndpointUrlField().value = card.ingestion.endpoint.urlTemplate;
     
@@ -169,6 +236,7 @@ const loadCardConfigurationFields = () => {
 
 const configure = () => {
     toggleShowCards();
+    refreshDashboard();
 };
 
 const setDashboardConfig = (e) => {
@@ -207,17 +275,36 @@ const adjustEditorMode = () => {
     if (getConfigCardIngestionEndpointBodyTypeField().value === "graphql") {
         setEditorToGraphQLMode();
         document.getElementById("endpoint-body-template-group").style.visibility = "";
-        Editor.setReadOnly(false);
+        Editor.updateOptions({ readOnly: false });
     } else if (getConfigCardIngestionEndpointBodyTypeField().value === "json") {
         setEditorToJSONMode();
         document.getElementById("endpoint-body-template-group").style.visibility = "";
-        Editor.setReadOnly(false);
+        Editor.updateOptions({ readOnly: true });
     } else {
         document.getElementById("endpoint-body-template-group").style.visibility = "hidden";
-        Editor.session.setValue('');
-        Editor.setReadOnly(true);
+        Editor.updateOptions({ readOnly: true });
+        Editor.setValue('');
     }
 };
+
+const setCardInputConfig = (e) => {
+    e.preventDefault();
+    const card = DashboardConfig.cards[getConfigCardsListField().selectedIndex];
+    const input = card.input[getConfigCardInputsListField().selectedIndex];
+    input.type = getConfigCardInputTypeField().value;
+    input.label = getConfigCardInputLabelField().value;
+    input.name = getConfigCardInputNameField().value;
+    input.value = getConfigCardInputValueField().value;
+}
+
+const setCardMetaConfig = (e) => {
+    e.preventDefault();
+    const card = DashboardConfig.cards[getConfigCardsListField().selectedIndex];
+    card.title = getCardMetaTitleField().value;
+    card.order = getCardMetaOrderField().value;
+    card.baseSize = getCardMetaBaseSizeField().value;
+    card.footer = getCardMetaFooterField().value;
+}
 
 const setCardIngestionConfig = (e) => {
     e.preventDefault();
@@ -261,7 +348,7 @@ const loadDashboard = () => {
             spinner.innerHTML = dashboard.spinner || '<em>loading...</em>';
             
             refreshDashboard();
-            startEditor();
+            // startEditor();
         })
         .catch((err) => console.log(err))
         .then(() => {
@@ -331,29 +418,45 @@ const getPieCard = (config, data) => {
 };
 
 const startEditor = () => {
-    Editor = ace.edit("endpoint-body-template", {
-        useWorker: false,
+    Editor = monaco.editor.create(
+        getConfigCardIngestionEndpointBodyTemplateField(), {
+        value: '{}',
+        language: 'json',
+        theme: "vs-light",
+        automaticLayout: true
     });
-    Editor.setTheme("ace/theme/github");
-    console.log(Editor.getValue());
+    Editor.layout({
+        // width: '500px',
+        // height: '400px'
+    });
 }
 
 const setEditorToJSONMode = () => {
-    var JSONMode = ace.require("ace/mode/json").Mode;
-    Editor.session.setMode(new JSONMode());
+    Editor.updateOptions({
+        language: 'json'
+    });
 }
 
 const setEditorToGraphQLMode = () => {
-    var GraphQLMode = ace.require("ace/mode/graphqlschema").Mode;
-    Editor.session.setMode(new GraphQLMode());
+    Editor.updateOptions({
+        language: 'graphql'
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    startEditor();
+
     getConfigureButton().addEventListener('click', configure);
     getRefreshButton().addEventListener('click', refreshDashboard);
 
-    getConfigCardsListField().addEventListener('change', loadCardConfigurationFields);
     getDashboardConfigForm().addEventListener('submit', setDashboardConfig);
+    
+    getConfigCardsListField().addEventListener('change', loadCardConfigurationFields);
+
+    getConfigCardInputsListField().addEventListener('change', loadCardInputFields);
+    getCardInputConfigForm().addEventListener('submit', setCardInputConfig);
+
+    getCardMetaForm().addEventListener('submit', setCardMetaConfig);
 
     getConfigCardIngestionEndpointVerbField().addEventListener('change', adjustVerbFields);
     getConfigCardIngestionEndpointBodyTypeField().addEventListener('change', adjustEditorMode);

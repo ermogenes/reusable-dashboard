@@ -50,8 +50,11 @@ body > div > aside {
   cursor: pointer;
 }
 
+#cards-configuration > * {
+  max-width: 450px;
+}
+
 #endpoint-body-template {
-  min-height: 200px;
-  width: 100%;
-  border: 1px solid black;
+  height: 300px;
+  border: 1px solid gray;
 }
