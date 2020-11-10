@@ -1,6 +1,6 @@
 {
-    "header": "Dashboard de exemplo 01 header",
-    "footer": "Dashboard de exemplo 01 footer",
+    "header": "Exemplo 01 header",
+    "footer": "Exemplo 01 footer",
     "cards": [
         {
             "order": 0,

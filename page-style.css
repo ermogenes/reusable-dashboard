@@ -24,6 +24,10 @@ body > * {
 body > header,
 body > footer {
   flex: 0 1 50px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 body > div {
@@ -36,7 +40,7 @@ body > div > aside {
   flex: 0 1 100px;
 }
 
-#dash-board {
+#dashboard {
   background-color: #fff;
 }
 
@@ -48,13 +52,4 @@ body > div > aside {
 .refresh-button {
   color: #999;
   cursor: pointer;
-}
-
-#cards-configuration > * {
-  max-width: 450px;
-}
-
-#endpoint-body-template {
-  height: 300px;
-  border: 1px solid gray;
 }

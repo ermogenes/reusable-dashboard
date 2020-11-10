@@ -1,11 +1,6 @@
 {
-    "date": "",
-    "meta": {
-        "asd": "",
-        "sdfgerge": ""
-    },
     "result": {
-        "nome": "teste",
+        "nome": "Quantidade por sub/ano",
         "registros": [
             {
                 "subprefeitura": "Sé",

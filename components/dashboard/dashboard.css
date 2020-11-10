@@ -1,0 +1,64 @@
+#dashboard {
+  flex: 1;
+
+  display: flex;
+  flex-flow: column;
+
+  overflow: hidden;
+}
+
+#dashboard > header,
+#dashboard > footer {
+  margin: 5px;
+  padding: 5px;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+#dashboard > .toolbar {
+  flex: 1;
+  display: flex;
+}
+
+#dashboard > .toolbar > * {
+  padding-left: 5px;
+}
+
+#dashboard > .cards {
+  flex: 1;
+
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+}
+
+#dashboard > .cards > .card {
+  flex: 0 0 auto;
+  margin: 5px;
+  padding: 5px;
+
+  display: flex;
+  flex-flow: column;
+}
+
+#dashboard > .cards > .card > * {
+  flex: 1;
+}
+
+#dashboard > .cards > .card > header,
+#dashboard > .cards > .card > footer {
+  flex: 0 1 auto;
+}
+
+#dashboard > .cards > .card > header {
+  font-weight: bold;
+}
+
+#dashboard > .cards > .card > footer {
+  font-style: italic;
+}
+
+#dashboard > .cards > .card > article {
+  flex: 1;
+}
