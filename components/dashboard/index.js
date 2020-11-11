@@ -38,10 +38,14 @@ var engine = {
     },
 
     start: (data) => {
+        engine.restart(data);
+        ui.toggleShowCards(true);
+    },
+
+    restart: (data) => {
         DashboardConfig = data;
         engine.refreshDashboard();
-        ui.toggleShowCards(true);
-    },    
+    },
 
     loadConfigurationMarkup: async () => {
         const response = await fetch(EngineConfig.endpoints.configurationMarkup);
@@ -126,6 +130,36 @@ var engine = {
         engine.loadAllCards()
             .then(() => ui.fillConfigurationFields());
     },
+    
+    getConfigFromServer: async () => {
+        return fetch(EngineConfig.endpoints.dashboard)
+            .then((response) => response.json());
+    },
+
+    reloadConfiguration: async () => {
+        await engine.getConfigFromServer()
+            .then((data) => engine.restart(data));
+    },
+
+    sendConfiguration: async () => {
+        return fetch(EngineConfig.endpoints.persist, {
+            method: 'POST',
+            mode: EngineConfig.endpoints.persistUseCors ? 'cors': 'no-cors',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(DashboardConfig),
+        }).then((response) => {
+            if (!response.ok) {
+                alert('Failed!');
+            } else {
+                alert('Ok!');
+            }
+        }).catch((error) => {
+            alert('Error!');
+        });
+    },
 };
 
 var ui = {
@@ -135,9 +169,19 @@ var ui = {
     configForm: () => document.getElementById('form-dashboard'),
     headerField: () => document.getElementById('dashboard-header-text'),
     footerField: () => document.getElementById('dashboard-footer-text'),
+    saveButton: () => document.getElementById('dashboard-save-button'),
     
     cardsConfigForm: () => document.getElementById('cards-configuration'),
+    configReloadButton: () => document.getElementById('reload-button'),
+    configSendButton: () => document.getElementById('send-button'),
+    configExportButton: () => document.getElementById('export-button'),
+    configImportButton: () => document.getElementById('import-button'),
+    configImportFileField: () => document.getElementById('import-file'),
+
     cardsListField: () => document.getElementById('cards-list'),
+    cardsNewCardButton: () => document.getElementById('new-card-button'),
+    cardsCloneCardButton: () => document.getElementById('clone-card-button'),
+    cardsDeleteCardButton: () => document.getElementById('delete-card-button'),
 
     cardsTabs: () => ui.configurationContainer().querySelectorAll(".card-tab"),
     
@@ -146,6 +190,7 @@ var ui = {
     metaOrderField: () => document.getElementById('meta-order'),
     metaBaseSizeField: () => document.getElementById('meta-base-size'),
     metaFooterField: () => document.getElementById('meta-footer'),
+    metaSaveButton: () =>  document.getElementById('meta-save-button'),
     
     inputConfigForm: () => document.getElementById('form-card-input'),
     inputsListField: () => document.getElementById('card-inputs-list'),
@@ -153,6 +198,10 @@ var ui = {
     inputLabelField: () => document.getElementById('input-label'),
     inputNameField: () => document.getElementById('input-name'),
     inputValueField: () => document.getElementById('input-value'),
+    inputNewButton: () =>  document.getElementById('input-new-button'),
+    inputCloneButton: () =>  document.getElementById('input-clone-button'),
+    inputDeleteButton: () =>  document.getElementById('input-delete-button'),
+    inputSaveButton: () =>  document.getElementById('input-save-button'),
     
     ingestionConfigForm: () => document.getElementById('form-card-ingestion'),
     ingestionEndpointUrlField: () => document.getElementById('endpoint-url'),
@@ -160,6 +209,7 @@ var ui = {
     ingestionEndpointBodyTypeField: () => document.getElementById('endpoint-body-type'),
     ingestionEndpointBodyTemplateField: () => document.getElementById('endpoint-body-template'),
     ingestionEndpointBodyTemplateGroup: () => document.getElementById('endpoint-body-template-group'),
+    ingestionSaveButton: () =>  document.getElementById('ingestion-save-button'),
     
     vizConfigForm: () => document.getElementById('form-card-viz'),
     vizTypeField: () => document.getElementById('viz-type'),
@@ -171,6 +221,7 @@ var ui = {
     vizPieObjectArrayField: () => document.getElementById('viz-pie-object-array-property'),
     vizPieLabelField: () => document.getElementById('viz-pie-label-property'),
     vizPieValueField: () => document.getElementById('viz-pie-value-property'),
+    vizSaveButton: () =>  document.getElementById('viz-save-button'),
     
     configureButton: () => ui.container().querySelector('.config-button'),
     refreshButton: () => ui.container().querySelector('.refresh-button'),
@@ -186,7 +237,7 @@ var ui = {
         ui.editor = monaco.editor.create(
             ui.ingestionEndpointBodyTemplateField(), {
             value: '{}',
-            language: 'json',
+            language: 'plaintext', // or 'json'
             theme: 'vs-light',
             automaticLayout: true
         });
@@ -203,26 +254,42 @@ var ui = {
     setUiEvents: () => {
         ui.configureButton().addEventListener('click', ui.toggleView);
         ui.refreshButton().addEventListener('click', engine.refreshDashboard);
-    
-        ui.configForm().addEventListener('submit', ui.setDashboardConfig);
+
+        ui.configReloadButton().addEventListener('click', engine.reloadConfiguration),
+        ui.configSendButton().addEventListener('click', engine.sendConfiguration),
+        ui.configImportButton().addEventListener('change', ui.importFromFile, false),
+        ui.configExportButton().addEventListener('click', ui.export),
+
+        ui.saveButton().addEventListener('click', ui.setDashboardConfig);
         
         ui.cardsListField().addEventListener('change', ui.fillCardFields);
+
+        ui.cardsNewCardButton().addEventListener('click', ui.addEmptyCard);
+        ui.cardsCloneCardButton().addEventListener('click', ui.cloneCard);
+        ui.cardsDeleteCardButton().addEventListener('click', ui.deleteCard);
 
         ui.cardsTabs().forEach(t =>
             t.addEventListener('click', ui.setVisibleCardTab)
         );
-    
+        
+        ui.metaSaveButton().addEventListener('click', ui.setCardMetaConfig);
+        
         ui.inputsListField().addEventListener('change', ui.fillInputFields);
-        ui.inputConfigForm().addEventListener('submit', ui.setInputConfig);
-    
-        ui.metaForm().addEventListener('submit', ui.setCardMetaConfig);
-    
+
+        ui.inputNewButton().addEventListener('click', ui.addEmptyInput);
+        ui.inputCloneButton().addEventListener('click', ui.cloneInput);
+        ui.inputDeleteButton().addEventListener('click', ui.deleteInput);
+
+        ui.inputSaveButton().addEventListener('click', ui.setInputConfig);
+        
         ui.ingestionEndpointVerbField().addEventListener('change', ui.adjustVerbFields);
         ui.ingestionEndpointBodyTypeField().addEventListener('change', ui.adjustEditorMode);
-        ui.ingestionConfigForm().addEventListener('submit', ui.setCardIngestionConfig);
+
+        ui.ingestionSaveButton().addEventListener('click', ui.setCardIngestionConfig);
     
         ui.vizTypeField().addEventListener('change', ui.adjustVizTypeFields);
-        ui.vizConfigForm().addEventListener('submit', ui.setCardVizConfig);    
+
+        ui.vizSaveButton().addEventListener('click', ui.setCardVizConfig);
     },
     
     toggleShowCards: (showCards) => {
@@ -251,6 +318,7 @@ var ui = {
         }
         ui.cardsListField().selectedIndex = 0;
         ui.cardsListField().dispatchEvent(new Event('change'));
+        ui.cardsTabs()[0].dispatchEvent(new Event('click'));
     },
 
     clearCardsContainer: () => {
@@ -305,8 +373,6 @@ var ui = {
         ui.vizPieObjectArrayField().value = card.visualization.pie?.objectArray || '';
         ui.vizPieLabelField().value = card.visualization.pie?.labelProperty || '';
         ui.vizPieValueField().value = card.visualization.pie?.valueProperty || '';
-
-        ui.cardsTabs()[0].dispatchEvent(new Event('click'));
     },
 
     fillInputFields: () => {
@@ -366,13 +432,13 @@ var ui = {
     adjustEditorMode: () => {
         if (ui.ingestionEndpointBodyTypeField().value === 'graphql') {
             ui.ingestionEndpointBodyTemplateGroup().hidden = false;
-            ui.editor.updateOptions({ language: 'graphql', readOnly: false });
+            ui.editor.updateOptions({ language: 'plaintext', readOnly: false });
         } else if (ui.ingestionEndpointBodyTypeField().value === 'json') {
             ui.ingestionEndpointBodyTemplateGroup().hidden = false;
             ui.editor.updateOptions({ language: 'json', readOnly: true });
         } else {
             ui.ingestionEndpointBodyTemplateGroup().hidden = true;
-            ui.editor.updateOptions({ readOnly: true });
+            ui.editor.updateOptions({ language: 'plaintext', readOnly: true });
             ui.editor.setValue('');
         }
     },    
@@ -417,7 +483,7 @@ var ui = {
         const card = DashboardConfig.cards[ui.cardsListField().selectedIndex];
         card.visualization = {};
         card.visualization.type = ui.vizTypeField().value;
-        
+
         if (card.visualization.type === 'text') {
             card.visualization.text = {
                 template: ui.vizTextTemplateField().value,
@@ -431,6 +497,155 @@ var ui = {
         }
     },    
 
+    export: () => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(
+            new Blob([JSON.stringify(DashboardConfig, null, 2)], {type: 'application/json'})
+        );
+        link.download =`dashboard-${
+            document.location.href.slugify()
+        }-${
+            (new Date()).toISOString()
+        }.json`;
+        link.click();
+    },
+
+    importFromFile: () => {
+        const file = ui.configImportFileField().files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = () => {
+                engine.restart(JSON.parse(reader.result));
+            };
+            reader.error = () => {
+                alert('Erro ao carregar.');
+            };
+        }
+    },
+
+    addEmptyCard: () => {
+        const newCard = {
+            order: ui.cardsListField().length,
+            title: `New card #${parseInt(Math.random() * 100000)}`,
+            baseSize: '200px',
+            footer: '',
+            input: [],
+            ingestion: {
+                endpoint: {
+                    urlTemplate: 'http(s)://...',
+                    verb: 'GET',
+                    bodyType: 'json'
+                }
+            },
+            visualization: {
+                type: 'text',
+                text: {
+                    template: 'Card text'
+                }
+            }
+        };
+        DashboardConfig.cards.push(newCard);
+        const cardOption = document.createElement('option');
+        cardOption.text = newCard.title;
+        cardOption.value = ui.cardsListField().length -1;
+        ui.cardsListField().options.add(cardOption);
+
+        ui.cardsListField().selectedIndex = ui.cardsListField().length -1;
+        ui.cardsListField().dispatchEvent(new Event('change'));
+    },
+
+    deleteCard: () => {
+        const cardIndex = ui.cardsListField().selectedIndex;
+        if (cardIndex >= 0)
+        {
+            DashboardConfig.cards.splice(cardIndex, 1);
+            const card = DashboardConfig.cards[cardIndex];
+            ui.cardsListField().options.remove(cardIndex);
+            if (ui.cardsListField().options.length === 0)
+            {
+                ui.addEmptyCard();
+            }
+            ui.cardsListField().selectedIndex = 0;
+        }
+        
+        ui.cardsListField().dispatchEvent(new Event('change'));
+    },
+
+    cloneCard: () => {
+        const cardIndex = ui.cardsListField().selectedIndex;
+        const card = DashboardConfig.cards[cardIndex];
+        const newCard = JSON.parse(JSON.stringify(card));
+        newCard.title = `${newCard.title} [clone] #${parseInt(Math.random() * 100000)}`;
+        DashboardConfig.cards.push(newCard);
+        const cardOption = document.createElement('option');
+        cardOption.text = newCard.title;
+        cardOption.value = ui.cardsListField().length -1;
+        ui.cardsListField().options.add(cardOption);
+
+        ui.cardsListField().selectedIndex = ui.cardsListField().length -1;
+        ui.cardsListField().dispatchEvent(new Event('change'));
+    },
+
+    addEmptyInput: () => {
+        const label = `New input #${parseInt(Math.random() * 100000)}`;
+        const newInput = {
+            type: 'text',
+            label,
+            name: label.slugify(),
+            value: '',
+        };
+        
+        const cardIndex = ui.cardsListField().selectedIndex;
+
+        if (!DashboardConfig.cards[cardIndex].input) DashboardConfig.cards[cardIndex].input = [];
+        DashboardConfig.cards[cardIndex].input.push(newInput);
+
+        const inputIndex = ui.inputsListField().length -1;
+        const input = DashboardConfig.cards[cardIndex].input[inputIndex];
+
+        const inputOption = document.createElement('option');
+        inputOption.text = newInput.label;
+        inputOption.value = inputIndex;
+        ui.inputsListField().options.add(inputOption);
+
+        ui.inputsListField().selectedIndex = ui.inputsListField().length -1;
+        ui.inputsListField().dispatchEvent(new Event('change'));
+    },
+
+    deleteInput: () => {
+        const cardIndex = ui.cardsListField().selectedIndex;
+        if (cardIndex >= 0)
+        {
+
+            const inputIndex = ui.inputsListField().selectedIndex;
+            if (inputIndex >= 0)
+            {
+                DashboardConfig.cards[cardIndex].input.splice(inputIndex ,1);
+                const input = DashboardConfig.cards[cardIndex].input[inputIndex];
+                ui.inputsListField().options.remove(inputIndex);
+                ui.inputsListField().selectedIndex = 0;
+            }
+        }
+        ui.cardsListField().dispatchEvent(new Event('change'));
+    },
+
+    cloneInput: () => {
+        const cardIndex = ui.cardsListField().selectedIndex;
+        const inputIndex = ui.inputsListField().selectedIndex;
+        const input = DashboardConfig.cards[cardIndex].input[inputIndex];
+
+        const newInput = JSON.parse(JSON.stringify(input));
+        newInput.label = `${newInput.label} [clone] #${parseInt(Math.random() * 100000)}`;
+
+        if (!DashboardConfig.cards[cardIndex].input) DashboardConfig.cards[cardIndex].input = [];
+        DashboardConfig.cards[cardIndex].input.push(newInput);
+        
+        const inputOption = document.createElement('option');
+        inputOption.text = newInput.label;
+        inputOption.value = ui.inputsListField().length -1;
+        ui.inputsListField().options.add(inputOption);
+    },    
 };
 
 var viz = {
@@ -499,11 +714,11 @@ var viz = {
 
 // Initialization
 
-const loadDashboard = (engineConfig) => {
+
+const loadDashboard = async (engineConfig) => {
     EngineConfig = engineConfig;
 
-    return fetch(engineConfig.endpoints.dashboard)
-        .then((response) => response.json())
+    return engine.getConfigFromServer()
         .then((data) => engine.start(data));
 };
 

@@ -19,12 +19,15 @@
     }
     
     #cards-configuration > *,
-    #form-card-viz > *, 
-    #endpoint-body-template-group > * {
+    #form-card-viz > * {
         flex: 1;
 
         display: flex;
         flex-flow: column;
+    }
+
+    #form-card-viz > *:last-child {
+        display: block;
     }
 
     #cards-configuration > * {
@@ -56,6 +59,15 @@
 
 </style>
 
+<div>
+    <span class="dashboard-action" id="reload-button">Reload from server</span>
+    <span class="dashboard-action" id="send-button">Send to server</span>
+    <span class="dashboard-action" id="export-button">Export</span>
+    <span class="dashboard-action" id="import-button">
+        <label>Import <input id="import-file" type="file" hidden></label>
+    </span>
+</div>
+
 <div id="dashboard-configuration">
     <h4>General configuration</h4>
     <form id="form-dashboard">
@@ -66,7 +78,7 @@
         <input type="text" id="dashboard-footer-text" name="dashboard-footer-text">
 
         <div>
-            <button type="submit">Ok</button>
+            <span class="dashboard-action" id="dashboard-save-button">Save</span>
         </div>
     </form>
 </div>
@@ -78,16 +90,20 @@
         <select name="cards-list" id="cards-list" size="8">
             <option></option>
         </select>
-        <button>New card</button>
+        <div>
+            <span class="dashboard-action" id="new-card-button">New card</span>
+            <span class="dashboard-action" id="clone-card-button">Clone card</span>
+            <span class="dashboard-action" id="delete-card-button">Delete card</span>
+        </div>
     </div>
 
     <div class="tabs">
         <h4>Card</h4>
         <nav>
-            <a class="card-tab" data-activate-class="card-meta" href="#">Meta</a>
-            <a class="card-tab" data-activate-class="card-input" href="#">Input</a>
-            <a class="card-tab" data-activate-class="card-config" href="#">Ingestion</a>
-            <a class="card-tab" data-activate-class="card-output" href="#">Visualization</a>
+            <span class="card-tab dashboard-action" data-activate-class="card-meta">Meta</span>
+            <span class="card-tab dashboard-action" data-activate-class="card-input">Input</span>
+            <span class="card-tab dashboard-action" data-activate-class="card-ingestion">Ingestion</span>
+            <span class="card-tab dashboard-action" data-activate-class="card-output">Visualization</span>
         </nav>
     </div>
 
@@ -108,7 +124,9 @@
                 <label for="meta-footer">Footer</label>
                 <input type="text" id="meta-footer" name="meta-footer">
 
-                <div><button>Save</button></div>
+                <div>
+                    <span class="dashboard-action" id="meta-save-button">Save</span>
+                </div>
             </form>
         </div>
 
@@ -119,7 +137,11 @@
             <select name="card-inputs-list" id="card-inputs-list" size="8">
                 <option></option>
             </select>
-            <button>New input</button>                        
+            <div>
+                <span class="dashboard-action" id="input-new-button">New input</span>
+                <span class="dashboard-action" id="input-clone-button">Clone input</span>
+                <span class="dashboard-action" id="input-delete-button">Delete input</span>
+            </div>
 
             <h4>Input</h4>
                 <label for="input-type">Type</label>
@@ -136,12 +158,14 @@
                 <label for="input-value">Value</label>
                 <input type="text" id="input-value" name="input-value">
 
-                <div><button>Save</button></div>
+                <div>
+                    <span class="dashboard-action" id="input-save-button">Save</span>
+                </div>
             </form>
             
         </div>  
 
-        <div class="card-tab-container card-config">
+        <div class="card-tab-container card-ingestion">
             <h4>Data ingestion</h4>
             <form id="form-card-ingestion">
                 <label for="endpoint-url">Endpoint URL template:</label>
@@ -167,7 +191,9 @@
                     </div>
                 </div>
                 
-                <div><button type="submit">Save</button></div>
+                <div>
+                    <span class="dashboard-action" id="ingestion-save-button">Save</span>
+                </div>
             </form>
         </div>
 
@@ -198,7 +224,9 @@
                     <input type="text" name="viz-pie-value-property" id="viz-pie-value-property">
                 </div>
 
-                <div><button type="submit">Save</button></div>
+                <div>
+                    <span class="dashboard-action" id="viz-save-button">Save</span>
+                </div>
             </form>
         </div>
         

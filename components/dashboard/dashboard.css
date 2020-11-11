@@ -62,3 +62,22 @@
 #dashboard > .cards > .card > article {
   flex: 1;
 }
+
+.dashboard-action {
+  color: #666;
+  cursor: pointer;
+  border: 1px solid #999;
+  border-radius: 5px;
+  padding: 3px;
+  margin: 2px;
+  display: inline-block;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.dashboard-action:hover {
+  color: black;
+  background-color: #eee;
+  transform: translateY(-1px);
+  box-shadow: 1px 1px 2px #aaa;
+}

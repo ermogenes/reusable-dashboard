@@ -47,9 +47,3 @@ body > div > aside {
 .card {
   border: 1px solid black;
 }
-
-.config-button,
-.refresh-button {
-  color: #999;
-  cursor: pointer;
-}
