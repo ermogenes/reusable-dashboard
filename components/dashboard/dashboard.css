@@ -81,3 +81,91 @@
   transform: translateY(-1px);
   box-shadow: 1px 1px 2px #aaa;
 }
+
+#import-button label {
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+#dashboard > .configuration {
+  flex: 1;
+
+  margin: 5px;
+  padding: 5px;
+
+  display: flex;
+  flex-flow: column;
+}
+
+#dashboard > .configuration form {
+  display: flex;
+  flex-flow: column;
+}
+
+#cards-configuration {
+  display: flex;
+}
+
+#dashboard > .configuration #form-dashboard {
+  flex: 1;
+
+  display: flex;
+  flex-flow: row;
+}
+
+#dashboard > .configuration #form-dashboard > * {
+  flex: 0 1 400px;
+  margin: 0 5px 0 5px;
+
+  display: flex;
+  align-self: flex-end;
+  flex-flow: column;
+}
+
+#dashboard > .configuration #form-dashboard > *:last-child {
+  flex: 0 0 auto;
+}
+
+#dashboard > .configuration #form-dashboard > *:last-child > span {
+  margin-bottom: 0;
+}
+
+#cards-configuration > *,
+#form-card-viz > *,
+#form-dashboard,
+#endpoint-body-type {
+  flex: 1;
+
+  display: flex;
+  flex-flow: column;
+}
+
+#form-card-viz > *:last-child {
+  display: block;
+}
+
+#cards-configuration > * {
+  margin: 5px;
+  max-width: 650px;
+}
+
+#cards-configuration > .list {
+  flex: 0 1 450px;
+}
+
+#cards-configuration > *:last-child {
+  flex: 1;
+}
+
+#cards-configuration > .tabs {
+  flex: 0 1 75px;
+}
+
+#cards-configuration > .tabs * {
+  display: block;
+}
+
+#endpoint-body-template {
+  height: 300px;
+  border: 1px solid gray;
+}

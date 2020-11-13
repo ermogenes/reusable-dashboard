@@ -1,0 +1,48 @@
+{
+  "header": "Exemplo 01 header",
+  "footer": "Exemplo 01 footer",
+  "cards": [
+    {
+      "order": 0,
+      "title": "Teste de Card de Texto",
+      "baseSize": "200px",
+      "footer": "Prodam",
+      "input": [],
+      "ingestion": {
+        "endpoint": {
+          "urlTemplate": "./data/card-text-01.json",
+          "method": "GET",
+          "bodyType": "json"
+        }
+      },
+      "visualization": {
+        "type": "text",
+        "text": {
+          "template": "O nome é ${result.nome}!"
+        }
+      }
+    },
+    {
+      "order": 1,
+      "title": "Protocolos por assunto",
+      "baseSize": "400px",
+      "footer": "Local",
+      "input": [],
+      "ingestion": {
+        "endpoint": {
+          "urlTemplate": "./data/card-api-ul0108.json",
+          "method": "GET",
+          "bodyType": "none"
+        }
+      },
+      "visualization": {
+        "type": "pie",
+        "pie": {
+          "objectArray": "",
+          "labelProperty": "NomeAssunto",
+          "valueProperty": "QtdProtocolosAssociados"
+        }
+      }
+    }
+  ]
+}
