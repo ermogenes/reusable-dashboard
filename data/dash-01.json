@@ -39,7 +39,7 @@
         "type": "pie",
         "pie": {
           "objectArray": "result.registros",
-          "labelProperty": "subprefeitura",
+          "labelTemplate": "${subprefeitura} em ${ano}",
           "valueProperty": "quantidade"
         }
       }
@@ -71,83 +71,7 @@
         }
       }
     },
-    {
-      "order": 3,
-      "title": "Lançamentos do Metallica, por data",
-      "baseSize": "400px",
-      "footer": "from MusicBrainz API",
-      "input": [
-        {
-          "name": "artistId",
-          "type": "text",
-          "label": "ID do artista",
-          "value": "65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab"
-        }
-      ],
-      "ingestion": {
-        "endpoint": {
-          "urlTemplate": "https://musicbrainz.org/ws/2/release-group?fmt=json&artist=${artistId}",
-          "method": "GET",
-          "bodyType": "none"
-        }
-      },
-      "visualization": {
-        "type": "pie",
-        "pie": {
-          "objectArray": "release-groups",
-          "labelProperty": "first-release-date"
-        }
-      }
-    },
-    {
-      "order": 4,
-      "title": "Artistas contendo a palavra 'the', por país",
-      "baseSize": "500px",
-      "footer": "from MusicBrainz API",
-      "input": [
-        {
-          "name": "palavra",
-          "type": "text",
-          "label": "Palavra a buscar",
-          "value": "the"
-        }
-      ],
-      "ingestion": {
-        "endpoint": {
-          "urlTemplate": "https://musicbrainz.org/ws/2/artist?fmt=json&query=${palavra}",
-          "method": "GET",
-          "bodyType": "none"
-        }
-      },
-      "visualization": {
-        "type": "pie",
-        "pie": {
-          "objectArray": "artists",
-          "labelProperty": "country"
-        }
-      }
-    },
-    {
-      "order": 5,
-      "title": "Dados sobre o Brasil",
-      "baseSize": "300px",
-      "footer": "from GraphQL Countries List",
-      "input": [],
-      "ingestion": {
-        "endpoint": {
-          "urlTemplate": "https://countries.trevorblades.com/",
-          "method": "POST",
-          "bodyType": "graphql",
-          "bodyTemplate": "{\r\ncountry(code:\"BR\"){\r\nname\r\nnative\r\ncapital\r\ncurrency\r\nlanguages{\r\ncode\r\nname\r\n}\r\n}\r\n}"
-        }
-      },
-      "visualization": {
-        "type": "text",
-        "text": {
-          "template": "A capital do ${data.country.name} é ${data.country.capital}"
-        }
-      }
-    },
+
     {
       "order": 6,
       "title": "Dados sobre um país",

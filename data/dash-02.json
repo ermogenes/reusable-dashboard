@@ -39,7 +39,7 @@
         "type": "pie",
         "pie": {
           "objectArray": "",
-          "labelProperty": "NomeAssunto",
+          "labelTemplate": "NomeAssunto",
           "valueProperty": "QtdProtocolosAssociados"
         }
       }

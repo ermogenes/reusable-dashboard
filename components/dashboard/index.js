@@ -233,7 +233,7 @@ var ui = {
   vizPieGroup: () => document.getElementById('viz-type-pie-group'),
   vizPieObjectArrayField: () =>
     document.getElementById('viz-pie-object-array-property'),
-  vizPieLabelField: () => document.getElementById('viz-pie-label-property'),
+  vizPieLabelField: () => document.getElementById('viz-pie-label-template'),
   vizPieValueField: () => document.getElementById('viz-pie-value-property'),
   vizSaveButton: () => document.getElementById('viz-save-button'),
 
@@ -410,7 +410,7 @@ var ui = {
 
     ui.vizPieObjectArrayField().value =
       card.visualization.pie?.objectArray || '';
-    ui.vizPieLabelField().value = card.visualization.pie?.labelProperty || '';
+    ui.vizPieLabelField().value = card.visualization.pie?.labelTemplate || '';
     ui.vizPieValueField().value = card.visualization.pie?.valueProperty || '';
   },
 
@@ -530,7 +530,7 @@ var ui = {
     } else if (card.visualization.type === 'pie') {
       card.visualization.pie = {
         objectArray: ui.vizPieObjectArrayField().value,
-        labelProperty: ui.vizPieLabelField().value,
+        labelTemplate: ui.vizPieLabelField().value,
         valueProperty: ui.vizPieValueField().value,
       };
     }
@@ -721,19 +721,27 @@ var viz = {
         config.visualization?.pie?.objectArray,
         data
       ),
-      labelProperty: config.visualization?.pie?.labelProperty,
+      labelTemplate: config.visualization?.pie?.labelTemplate,
       valueProperty: config.visualization?.pie?.valueProperty,
     };
 
     const dataColumns = [];
     const defaultLabel = '-';
+
     content.objectArray.forEach((line) => {
+      let cleanedLine = {};
+      Object.entries(line).forEach((prop) => {
+        if (!Array.isArray(prop[1]) && typeof prop[1] !== 'function')
+          cleanedLine[prop[0]] = prop[1];
+      });
+
+      const label = content.labelTemplate.interpolate(cleanedLine);
+
       let i = dataColumns.findIndex(
-        (targetLine) =>
-          targetLine[0] === (line[content.labelProperty] || defaultLabel)
+        (targetLine) => targetLine[0] === (label || defaultLabel)
       );
       if (i < 0) {
-        dataColumns.push([line[content.labelProperty] || defaultLabel]);
+        dataColumns.push([label || defaultLabel]);
         i = dataColumns.length - 1;
       }
 
