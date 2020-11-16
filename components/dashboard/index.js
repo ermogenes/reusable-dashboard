@@ -169,6 +169,18 @@ var engine = {
       .catch((error) => {
         alert('Error!');
       }),
+
+  downloadSheet: (arrayOfObjects, format, filenameTip) => {
+    const wb = XLSX.utils.book_new();
+    const sheetName = filenameTip || 'Data';
+    wb.SheetNames.push(sheetName);
+    const ws = XLSX.utils.json_to_sheet(arrayOfObjects);
+    wb.Sheets[sheetName] = ws;
+    const filename = `${
+      filenameTip || 'report'
+    }-${new Date().toISOString()}.${format}`;
+    XLSX.writeFile(wb, filename);
+  },
 };
 
 var ui = {
@@ -236,6 +248,13 @@ var ui = {
   vizPieLabelField: () => document.getElementById('viz-pie-label-template'),
   vizPieValueField: () => document.getElementById('viz-pie-value-property'),
   vizSaveButton: () => document.getElementById('viz-save-button'),
+
+  reportConfigForm: () => document.getElementById('form-card-report'),
+  reportAllowField: () => document.getElementById('report-allow'),
+  reportFormatField: () => document.getElementById('report-format'),
+  reportObjectArrayField: () =>
+    document.getElementById('report-object-array-property'),
+  reportSaveButton: () => document.getElementById('report-save-button'),
 
   configureButton: () => ui.container().querySelector('.config-button'),
   refreshButton: () => ui.container().querySelector('.refresh-button'),
@@ -318,6 +337,8 @@ var ui = {
     ui.vizTypeField().addEventListener('change', ui.adjustVizTypeFields);
 
     ui.vizSaveButton().addEventListener('click', ui.setCardVizConfig);
+
+    ui.reportSaveButton().addEventListener('click', ui.setCardReportConfig);
   },
 
   toggleShowCards: (showCards) => {
@@ -412,6 +433,10 @@ var ui = {
       card.visualization.pie?.objectArray || '';
     ui.vizPieLabelField().value = card.visualization.pie?.labelTemplate || '';
     ui.vizPieValueField().value = card.visualization.pie?.valueProperty || '';
+
+    ui.reportAllowField().checked = card.report?.allowDownload || false;
+    ui.reportFormatField().value = card.report?.format || '';
+    ui.reportObjectArrayField().value = card.report?.objectArray || '';
   },
 
   fillInputFields: () => {
@@ -534,6 +559,15 @@ var ui = {
         valueProperty: ui.vizPieValueField().value,
       };
     }
+  },
+
+  setCardReportConfig: (e) => {
+    e.preventDefault();
+    const card = DashboardConfig.cards[ui.cardsListField().selectedIndex];
+    card.report = {};
+    card.report.allowDownload = ui.reportAllowField().checked;
+    card.report.format = ui.reportFormatField().value;
+    card.report.objectArray = ui.reportObjectArrayField().value;
   },
 
   export: () => {
@@ -684,6 +718,15 @@ var ui = {
     inputOption.value = ui.inputsListField().length - 1;
     ui.inputsListField().options.add(inputOption);
   },
+
+  reportDownload: (e) => {
+    e.preventDefault();
+    engine.downloadSheet(
+      JSON.parse(e.currentTarget.dataset.json),
+      e.currentTarget.dataset.format,
+      e.currentTarget.dataset.filename
+    );
+  },
 };
 
 var viz = {
@@ -693,14 +736,35 @@ var viz = {
       header: config.header,
       footer: config.footer,
       text: config.visualization?.text?.template.interpolate(data),
+      objectArray: config.report?.allowDownload
+        ? viz.getObjectArray(config.report?.objectArray, data)
+        : [],
+      downloadFormat: config.report?.allowDownload ? config.report?.format : '',
     };
+
+    const linkId = `report-download-link-${
+      Math.round(Math.random() * 10000) + 1
+    }`;
 
     const markup = `
     <header>${content.header || content.title || 'no title'}</header>
     <article>${content.text || 'no text'}</article>
+    ${
+      content.downloadFormat
+        ? `<span class="download-link"
+          data-filename="${content.title.slugify()}"
+          data-json='${JSON.stringify(content.objectArray)}'
+          data-format="${content.downloadFormat}"
+          id="${linkId}">${content.downloadFormat}</span>`
+        : ''
+    }
     <footer>${content.footer || 'no footer'}</footer>`;
 
-    const script = ``;
+    const script = `${
+      content.downloadFormat
+        ? `document.getElementById('${linkId}').addEventListener('click', ui.reportDownload);`
+        : ''
+    }`;
 
     return { markup, script };
   },
@@ -723,6 +787,7 @@ var viz = {
       ),
       labelTemplate: config.visualization?.pie?.labelTemplate,
       valueProperty: config.visualization?.pie?.valueProperty,
+      downloadFormat: config.report?.allowDownload ? config.report?.format : '',
     };
 
     const dataColumns = [];
@@ -750,11 +815,22 @@ var viz = {
       );
     });
 
-    const cardId = 'card-c3-' + Math.round(Math.random() * 100000);
+    const randId = Math.round(Math.random() * 10000) + 1;
+    const cardId = `card-c3-${randId}`;
+    const linkId = `report-download-link-${randId}`;
 
     const markup = `
       <header>${content.header || content.title || ''}</header>
       <article id='${cardId}'></article>
+      ${
+        content.downloadFormat
+          ? `<span class="download-link"
+            data-filename="${content.title.slugify()}"
+            data-json='${JSON.stringify(content.objectArray)}'
+            data-format="${content.downloadFormat}"
+            id="${linkId}">${content.downloadFormat}</span>`
+          : ''
+      }      
       <footer>${content.footer || ''}</footer>
     `;
 
@@ -766,6 +842,11 @@ var viz = {
               columns: ${JSON.stringify(dataColumns)}
           }
       });
+      ${
+        content.downloadFormat
+          ? `document.getElementById('${linkId}').addEventListener('click', ui.reportDownload);`
+          : ''
+      }      
     `;
 
     return { markup, script };

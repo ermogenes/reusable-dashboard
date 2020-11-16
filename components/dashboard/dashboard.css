@@ -63,6 +63,22 @@
   flex: 1;
 }
 
+span.download-link {
+  flex: 1;
+  text-align: right;
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  cursor: pointer;
+  color: #999;
+}
+
+span.download-link:before {
+  content: '💾';
+  font-size: 80%;
+  padding-right: 3px;
+}
+
 .dashboard-action {
   color: #666;
   cursor: pointer;

@@ -65,6 +65,9 @@
       <span class="card-tab dashboard-action" data-activate-class="card-output"
         >Visualization</span
       >
+      <span class="card-tab dashboard-action" data-activate-class="card-report"
+        >Reporting</span
+      >
     </nav>
   </div>
 
@@ -139,13 +142,6 @@
           value="https://endpoint.com:5555/api/client/${client-id-}"
         />
 
-        <!-- <label for="endpoint-mode">Mode</label>
-                <select name="endpoint-mode" id="endpoint-mode">
-                    <option value="">(default)</option>
-                    <option value="cors">cors</option>
-                    <option value="no-cors">no-cors</option>
-                </select> -->
-
         <label for="endpoint-method">Endpoint VERB:</label>
         <select name="endpoint-method" id="endpoint-method">
           <option value="GET">GET</option>
@@ -218,6 +214,43 @@
 
         <div>
           <span class="dashboard-action" id="viz-save-button">Save</span>
+        </div>
+      </form>
+    </div>
+
+    <div class="card-tab-container card-report">
+      <h4>Reporting</h4>
+      <form id="form-card-report">
+        <div>
+          <input type="checkbox" id="report-allow" name="report-allow" />
+          <label for="report-allow">Allow download</label>
+        </div>
+
+        <label for="report-format">Format</label>
+        <select id="report-format" name="report-format">
+          <option value="">-- none --</option>
+          <option value="csv">CSV - Comma-Separated Values</option>
+          <option value="txt">TXT - Tab-Separated Values</option>
+          <option value="html">HTML - HTML tables</option>
+          <option value="ods">ODS - OpenDocument Spreadsheet</option>
+          <option value="xlsx">
+            XLSX - Excel 2007+ XML Formats (XLSX/XLSM)
+          </option>
+          <option value="xlsb">
+            XLSB - Excel 2007+ Binary Format (XLSB BIFF12)
+          </option>
+          <option value="xls">XLS - Excel 97-2004 (XLS BIFF8)</option>
+        </select>
+
+        <label for="report-object-array-property">Object array property</label>
+        <input
+          type="text"
+          name="report-object-array-property"
+          id="report-object-array-property"
+        />
+
+        <div>
+          <span class="dashboard-action" id="report-save-button">Save</span>
         </div>
       </form>
     </div>

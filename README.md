@@ -30,12 +30,20 @@ A página que exibirá o componente deve possuir uma `div` com o identificador `
 
 Serão necessárias também referências aos seguintes componentes:
 
+- SheetJS Community Edition (no exemplo, via CDN);
 - c3 (no exemplo, via CDN);
 - monaco (no exemplo, incorporado à aplicação que usará o dashboard);
 
 Exemplo:
 
 ```html
+<!-- SheetJS Community Edition, via cdn -->
+<script type="text/javascript" src="//unpkg.com/xlsx/dist/shim.min.js"></script>
+<script
+  type="text/javascript"
+  src="//unpkg.com/xlsx/dist/xlsx.full.min.js"
+></script>
+
 <!-- c3, via cdn -->
 <link
   rel="stylesheet"
@@ -191,6 +199,17 @@ Os endpoints de leitura e gravação da configuração deverão retornar um obje
       - `objectArray` string com o nome da propriedade que contém o array de objetos (vazio caso seja a raiz);
       - `labelTemplate` string com template dos rótulos dos setores, que será utilizada para agrupar os valores;
       - `valueProperty` string com o nome da propriedade que contém os valores dos setores, que será utilizada para soma das ocorrências (vazio realiza contagem em vez de soma).
+  - `report` objeto com informações sobre a disponibilização de relatório:
+    - `allowDownload` boolean indicando a liberação do link de download;
+    - `format` string com o formato do arquivo para download:
+      - `csv` para _CSV - Comma-Separated Values_;
+      - `txt` para _TXT - Tab-Separated Values_;
+      - `html` para _HTML - HTML tables_;
+      - `ods` para _ODS - OpenDocument Spreadsheet_;
+      - `xlsx` para _XLSX - Excel 2007+ XML Formats (XLSX/XLSM)_;
+      - `xlsb` para _XLSB - Excel 2007+ Binary Format (XLSB BIFF12)_;
+      - `xls` para _XLS - Excel 97-2004 (XLS BIFF8)_;
+    - `objectArray` string com o nome da propriedade que contém o array de objetos (vazio caso seja a raiz);
 
 As configurações podem ser obtidas/alteradas no objeto global `DashboardConfig`.
 
@@ -205,7 +224,7 @@ _Ações do formulário de configuração_:
 
 - `Reload from server` recarrega as configurações a partir do endpoint inicial;
 - `Send to server` envia as configurações atuais para o endpoint de persistência;
-- `Export` salva as configurações atuais em um arquivo JSON e realiza o seu donwload;
+- `Export` salva as configurações atuais em um arquivo JSON e realiza o seu download;
 - `Import` carrega as configurações a partir de um arquivo JSON enviado via upload.
 
 _Ações diversas_:

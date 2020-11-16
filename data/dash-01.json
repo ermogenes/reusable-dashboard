@@ -20,6 +20,11 @@
         "text": {
           "template": "O nome é ${result.nome}!"
         }
+      },
+      "report": {
+        "allowDownload": true,
+        "objectArray": "result.dados",
+        "format": "xlsx"
       }
     },
     {
@@ -42,6 +47,11 @@
           "labelTemplate": "${subprefeitura} em ${ano}",
           "valueProperty": "quantidade"
         }
+      },
+      "report": {
+        "allowDownload": true,
+        "objectArray": "result.registros",
+        "format": "csv"
       }
     },
     {
