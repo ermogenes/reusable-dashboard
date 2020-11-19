@@ -125,7 +125,7 @@ Os estilos podem ser alterados livremente. Foram criados majoritariamente usando
 <script src="./components/dashboard/index.js"></script>
 ```
 
-E iniciá-lo após a conclusão do carregamento do DOM chamando a função ``. Por exemplo:
+E iniciá-lo após a conclusão do carregamento do DOM chamando a função `loadDashboard`. Por exemplo:
 
 ```js
 const engineConfig = {
