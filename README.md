@@ -122,7 +122,7 @@ Os estilos podem ser alterados livremente. Foram criados majoritariamente usando
 É necessário referenciar o componente:
 
 ```html
-<link rel="stylesheet" href="./components/dashboard/dashboard.css" />
+<script src="./components/dashboard/index.js"></script>
 ```
 
 E iniciá-lo após a conclusão do carregamento do DOM chamando a função ``. Por exemplo:

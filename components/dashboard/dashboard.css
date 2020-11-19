@@ -37,6 +37,7 @@
   flex: 0 0 auto;
   margin: 5px;
   padding: 5px;
+  position: relative;
 
   display: flex;
   flex-flow: column;
@@ -184,4 +185,18 @@ span.download-link:before {
 #endpoint-body-template {
   height: 300px;
   border: 1px solid gray;
+}
+
+#import-file {
+  display: none !important;
+}
+
+#import-file * {
+  font-weight: normal !important;
+}
+
+#dashboard input,
+#dashboard select,
+#dashboard textarea {
+  max-width: 100%;
 }
