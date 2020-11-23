@@ -2,6 +2,10 @@
 
 Componente que cria um dashboard configurável.
 
+Veja uma apresentação do componente no YouTube:
+
+[![](http://i3.ytimg.com/vi/4g0_TtZB8-E/hqdefault.jpg)](https://youtu.be/4g0_TtZB8-E)
+
 ## Requisitos iniciais
 
 - Reutilizável em qualquer aplicação.
