@@ -190,6 +190,7 @@ Os endpoints de leitura e gravação da configuração deverão retornar um obje
       - `urlTemplate` string com o URL do endpoint (absoluto ou relativo, arquivo ou API);
       - `method` string com o método a ser utilizado no fetch;
       - `bodyType` string com o tipo do corpo da requisição:
+        - `none` para APIs que não recebam nenhuma entrada no corpo da requisição;
         - `json` para APIs que recebam JSON, com substituição dos parâmetros de entrada;
         - `graphql` para APIs com suporte a GraphQL, e envio de parâmetros de entrada como `variables`.
       - `bodyTemplate` string com o template JSON ou template de `query` GraphQL.
