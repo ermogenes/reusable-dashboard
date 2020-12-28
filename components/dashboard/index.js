@@ -131,7 +131,7 @@ var engine = {
         cardTag.style.order = card.order;
         cardTag.style.flexBasis = card.baseSize;
         cardTag.style.width = card.baseSize;
-        
+
         if (!document.getElementById(cardTag.id)) {
           cardsContainer.appendChild(cardTag);
           eval(cardEvaluation.script);  
@@ -173,13 +173,13 @@ var engine = {
     })
       .then((response) => {
         if (!response.ok) {
-          alert('Failed!');
+          ui.showMessage('Failed!');
         } else {
-          alert('Ok!');
+          ui.showMessage('Ok!');
         }
       })
       .catch((error) => {
-        alert('Error!');
+        ui.showMessage('Error!');
       }),
 
   downloadSheet: (arrayOfObjects, format, filenameTip) => {
@@ -603,7 +603,7 @@ var ui = {
         engine.restart(JSON.parse(reader.result));
       };
       reader.error = () => {
-        alert('Erro ao carregar.');
+        ui.showMessage('Erro ao carregar.');
       };
     }
   },
@@ -813,6 +813,11 @@ var ui = {
   removeSpinners: () => {
     ui.loadSpinners()?.forEach((spinner) => spinner.outerHTML = null);
   },
+
+  showMessage: (message) => {
+    // Implement here your UX messaging strategy
+    alert(message);
+  }
 };
 
 var viz = {
