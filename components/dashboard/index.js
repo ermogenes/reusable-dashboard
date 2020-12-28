@@ -133,13 +133,17 @@ var engine = {
 
   loadAllCards: () => {
     ui.clearCardsContainer();
+    ui.addSpinner();
     return Promise.all(DashboardConfig.cards.map((c) => engine.loadCard(c)));
   },
 
   refreshDashboard: () => {
     ui.headerTitle().innerHTML = DashboardConfig.header || '';
     ui.footer().innerHTML = DashboardConfig.footer || '';
-    engine.loadAllCards().then(() => ui.fillConfigurationFields());
+    engine.loadAllCards().then(() => {
+      ui.removeSpinners();
+      ui.fillConfigurationFields();
+    });
   },
 
   getConfigFromServer: () =>
@@ -191,6 +195,7 @@ var ui = {
   headerField: () => document.getElementById('dashboard-header-text'),
   footerField: () => document.getElementById('dashboard-footer-text'),
   saveButton: () => document.getElementById('dashboard-save-button'),
+  loadSpinners: () => document.querySelectorAll('.dashboard-load-spinner'),
 
   cardsConfigForm: () => document.getElementById('cards-configuration'),
   configReloadButton: () => document.getElementById('reload-button'),
@@ -726,6 +731,79 @@ var ui = {
       e.currentTarget.dataset.format,
       e.currentTarget.dataset.filename
     );
+  },
+
+  addSpinner: () => {
+    ui.removeSpinners();
+    ui.cardsContainer().insertAdjacentHTML('beforeend', `
+    <style>
+      .dashboard-load-spinner.spinner {
+        flex: 0 0 100%;
+        margin: 0 auto;
+        text-align: center;
+        width: 50px;
+        height: 40px;
+        font-size: 10px;
+        order: 99999;
+      }
+      
+      .dashboard-load-spinner.spinner > div {
+        background-color: #333;
+        height: 100%;
+        width: 6px;
+        display: inline-block;
+        
+        -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+        animation: sk-stretchdelay 1.2s infinite ease-in-out;
+      }
+      
+      .dashboard-load-spinner.spinner .rect2 {
+        -webkit-animation-delay: -1.1s;
+        animation-delay: -1.1s;
+      }
+      
+      .dashboard-load-spinner.spinner .rect3 {
+        -webkit-animation-delay: -1.0s;
+        animation-delay: -1.0s;
+      }
+      
+      .dashboard-load-spinner.spinner .rect4 {
+        -webkit-animation-delay: -0.9s;
+        animation-delay: -0.9s;
+      }
+      
+      .dashboard-load-spinner.spinner .rect5 {
+        -webkit-animation-delay: -0.8s;
+        animation-delay: -0.8s;
+      }
+      
+      @-webkit-keyframes sk-stretchdelay {
+        0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+        20% { -webkit-transform: scaleY(1.0) }
+      }
+      
+      @keyframes sk-stretchdelay {
+        0%, 40%, 100% { 
+          transform: scaleY(0.4);
+          -webkit-transform: scaleY(0.4);
+        }  20% { 
+          transform: scaleY(1.0);
+          -webkit-transform: scaleY(1.0);
+        }
+      }
+    </style>
+    <div class="spinner dashboard-load-spinner">
+    <div class="rect1"></div>
+    <div class="rect2"></div>
+    <div class="rect3"></div>
+    <div class="rect4"></div>
+    <div class="rect5"></div>
+  </div>
+    `);
+  },
+
+  removeSpinners: () => {
+    ui.loadSpinners()?.forEach((spinner) => spinner.outerHTML = null);
   },
 };
 
