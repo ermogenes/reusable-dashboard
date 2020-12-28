@@ -136,6 +136,23 @@ var engine = {
           cardsContainer.appendChild(cardTag);
           eval(cardEvaluation.script);  
         }
+      })
+      .catch((error) => {
+        const cardsContainer = ui.cardsContainer();
+        const cardTag = document.createElement('div');
+        cardTag.id = cardId;
+        cardTag.classList.add('card');
+        cardTag.innerHTML = `
+          <header>${card.title}</header>
+          <article><em>Erro ao carregar o card. Verifique as configurações e a disponibilidade do servidor.</em></article>
+        `;
+        cardTag.style.order = card.order;
+        cardTag.style.flexBasis = card.baseSize;
+        cardTag.style.width = card.baseSize;
+
+        if (!document.getElementById(cardTag.id)) {
+          cardsContainer.appendChild(cardTag);
+        }        
       });
   },
 
@@ -512,7 +529,7 @@ var ui = {
       ui.editor.updateOptions({ language: 'plaintext', readOnly: false });
     } else if (ui.ingestionEndpointBodyTypeField().value === 'json') {
       ui.ingestionEndpointBodyTemplateGroup().hidden = false;
-      ui.editor.updateOptions({ language: 'json', readOnly: true });
+      ui.editor.updateOptions({ language: 'json', readOnly: false });
     } else {
       ui.ingestionEndpointBodyTemplateGroup().hidden = true;
       ui.editor.updateOptions({ language: 'plaintext', readOnly: true });
@@ -522,8 +539,8 @@ var ui = {
 
   setDashboardConfig: (e) => {
     e.preventDefault();
-    DashboardConfig.header = ui.headerField().value;
-    DashboardConfig.footer = ui.footerField().value;
+    DashboardConfig.header = ui.headerField().value.trim();
+    DashboardConfig.footer = ui.footerField().value.trim();
     engine.refreshDashboard();
   },
 
@@ -531,56 +548,267 @@ var ui = {
     e.preventDefault();
     const card = DashboardConfig.cards[ui.cardsListField().selectedIndex];
     const input = card.input[ui.inputsListField().selectedIndex];
-    input.type = ui.inputTypeField().value;
-    input.label = ui.inputLabelField().value;
-    input.name = ui.inputNameField().value;
-    input.value = ui.inputValueField().value;
+
+    const newInput = {};
+    newInput.type = ui.inputTypeField().value.trim();
+    newInput.label = ui.inputLabelField().value.trim();
+    newInput.name = ui.inputNameField().value.trim();
+    newInput.value = ui.inputValueField().value.trim();
+
+    const errors = ui.validateInput(newInput, card, input);
+    if (errors.length > 0) {
+      let message = `Input settings not saved. Please check this items:\n\n${
+        errors.join('\n')
+      }`;
+      ui.showMessage(message);
+      return;
+    }
+
+    input.type = newInput.type;
+    input.label = newInput.label;
+    input.name = newInput.name;
+    input.value = newInput.value;
+  },
+
+  validateInput: (input, thisCard, thisInput) => {
+    const errors = [];
+
+    if (!input?.label) {
+      errors.push('An input must have a label.');
+    }
+
+    if (!input?.name) {
+      errors.push('An input must have a name.');
+    } else {
+      const otherInputWithSameName =
+        thisCard.input.find((preexistentInput) =>
+          preexistentInput !== thisInput && preexistentInput.name === input.name
+        );
+      if (otherInputWithSameName) {
+        errors.push('An input name must be unique in the card.');
+      }
+    }
+
+    if (!input?.type) {
+      errors.push('An input must have a type.');
+    }
+
+    if (input?.type !== 'text') {
+      errors.push('An input must have a valid type.');
+    }
+
+    if (!input?.value && input?.value !== '') {
+      errors.push('An input must have a value (or an empty string).');
+    }
+
+    return errors;
   },
 
   setCardMetaConfig: (e) => {
     e.preventDefault();
+
     const card = DashboardConfig.cards[ui.cardsListField().selectedIndex];
-    card.title = ui.metaTitleField().value;
-    card.order = ui.metaOrderField().value;
-    card.baseSize = ui.metaBaseSizeField().value;
-    card.footer = ui.metaFooterField().value;
+
+    const newMeta = {};
+    newMeta.title = ui.metaTitleField().value.trim();
+    newMeta.order = ui.metaOrderField().value;
+    newMeta.baseSize = ui.metaBaseSizeField().value.trim();
+    newMeta.footer = ui.metaFooterField().value.trim();
+
+    const errors = ui.validateMeta(newMeta, card);
+    if (errors.length > 0) {
+      let message = `Card settings not saved. Please check this items:\n\n${
+        errors.join('\n')
+      }`;
+      ui.showMessage(message);
+      return;
+    }
+
+    card.title = newMeta.title;
+    card.order = newMeta.order;
+    card.baseSize = newMeta.baseSize;
+    card.footer = newMeta.footer;
+  },
+
+  validateMeta: (meta, thisCard) => {
+    const errors = [];
+
+    if (!meta?.title) {
+      errors.push('A card must have a title.');
+    } else {
+      const otherCardWithSameSlug =
+        DashboardConfig.cards.find((card) =>
+          card !== thisCard && card.title.slugify() === meta.title.slugify()
+        );
+      if (otherCardWithSameSlug) {
+        errors.push('A card title must generate an unique title slug.');
+      }
+    }
+    
+    return errors;
   },
 
   setCardIngestionConfig: (e) => {
     e.preventDefault();
+
+    const newIngestion = {
+      endpoint: {},
+    };
+    newIngestion.endpoint.urlTemplate = ui.ingestionEndpointUrlField().value.trim();
+    newIngestion.endpoint.method = ui.ingestionEndpointMethodField().value.trim().toUpperCase();
+    newIngestion.endpoint.bodyType = ui.ingestionEndpointBodyTypeField().value.trim().toLowerCase();
+    newIngestion.endpoint.bodyTemplate = ui.editor.getValue().trim();
+
+    const errors = ui.validateIngestion(newIngestion);
+    if (errors.length > 0) {
+      let message = `Ingestion settings not saved. Please check this items:\n\n${
+        errors.join('\n')
+      }`;
+      ui.showMessage(message);
+      return;
+    }
+
     const card = DashboardConfig.cards[ui.cardsListField().selectedIndex];
-    card.ingestion.endpoint.urlTemplate = ui.ingestionEndpointUrlField().value;
-    card.ingestion.endpoint.method = ui.ingestionEndpointMethodField().value;
-    card.ingestion.endpoint.bodyType = ui.ingestionEndpointBodyTypeField().value;
-    card.ingestion.endpoint.bodyTemplate = ui.editor.getValue();
+    card.ingestion = newIngestion;
   },
+
+  validateIngestion: (ingestion) => {
+    const errors = [];
+
+    if (!ingestion?.endpoint?.urlTemplate) {
+      errors.push('An ingestion must have an URL template setting.');
+    }
+
+    const method = ingestion?.endpoint?.method;
+    if (method !== 'GET' && method !== 'POST') {
+      errors.push('An ingestion must have a valid method setting.');
+    }
+
+    const bodyType = ingestion?.endpoint?.bodyType?.toLowerCase();
+    if (bodyType !== 'json' && bodyType !== 'graphql' && bodyType !== 'none') {
+      errors.push('An ingestion must have a valid body type setting.');
+    }
+
+    if (!ingestion?.endpoint?.bodyTemplate && bodyType === 'graphql') {
+      errors.push('A GraphQL ingestion must have a body template setting.');
+    }
+    
+    if (!ingestion?.endpoint?.bodyTemplate && bodyType === 'json') {
+      errors.push('A JSON ingestion must have a body template setting.');
+    }
+
+    if (ingestion?.endpoint?.bodyTemplate && bodyType === 'none') {
+      errors.push('An ingestion without body cannot have a body template setting.');
+    }
+    
+    return errors;
+  },  
 
   setCardVizConfig: (e) => {
     e.preventDefault();
-    const card = DashboardConfig.cards[ui.cardsListField().selectedIndex];
-    card.visualization = {};
-    card.visualization.type = ui.vizTypeField().value;
 
-    if (card.visualization.type === 'text') {
-      card.visualization.text = {
-        template: ui.vizTextTemplateField().value,
+    const newViz = {};
+    newViz.type = ui.vizTypeField().value.trim();
+
+    let errors;
+
+    if (newViz.type === 'text') {
+      newViz.text = {
+        template: ui.vizTextTemplateField().value.trim(),
       };
-    } else if (card.visualization.type === 'pie') {
-      card.visualization.pie = {
-        objectArray: ui.vizPieObjectArrayField().value,
-        labelTemplate: ui.vizPieLabelField().value,
-        valueProperty: ui.vizPieValueField().value,
+      errors = ui.validateVizText(newViz);
+    } else if (newViz.type === 'pie') {
+      newViz.pie = {
+        objectArray: ui.vizPieObjectArrayField().value.trim(),
+        labelTemplate: ui.vizPieLabelField().value.trim(),
+        valueProperty: ui.vizPieValueField().value.trim(),
       };
+      errors = ui.validateVizPie(newViz);
+    } else {
+      errors.push('Visualization type not yet supported.');
     }
+
+    if (errors.length > 0) {
+      let message = `Visualization settings not saved. Please check this items:\n\n${
+        errors.join('\n')
+      }`;
+      ui.showMessage(message);
+      return;
+    }
+
+    const card = DashboardConfig.cards[ui.cardsListField().selectedIndex];
+    card.visualization = newViz;
+  },
+
+  validateVizText: (viz) => {
+    const errors = [];
+
+    if (viz?.type !== 'text') {
+      errors.push('Unexpected visualization type setting.');
+    }
+
+    if (!viz?.text?.template) {
+      errors.push('A text visualization must have a template setting.');
+    }
+
+    return errors;
+  },
+
+  validateVizPie: (viz) => {
+    const errors = [];
+
+    if (viz?.type !== 'pie') {
+      errors.push('Unexpected visualization type setting.');
+    }
+
+    if (!viz?.pie?.objectArray && viz?.pie?.objectArray !== '') {
+      errors.push('A pie visualization must have an object array setting (empty string means root object).');
+    }
+
+    if (!viz?.pie?.labelTemplate) {
+      errors.push('A pie visualization must have a label template setting.');
+    }
+
+    return errors;
   },
 
   setCardReportConfig: (e) => {
     e.preventDefault();
+
+    const newReport = {};
+    newReport.allowDownload = ui.reportAllowField().checked || false;
+    newReport.format = ui.reportFormatField().value.trim();
+    newReport.objectArray = ui.reportObjectArrayField().value.trim();
+
+    const errors = ui.validateReport(newReport);
+    if (errors.length > 0) {
+      let message = `Report settings not saved. Please check this items:\n\n${
+        errors.join('\n')
+      }`;
+      ui.showMessage(message);
+      return;
+    }
+
     const card = DashboardConfig.cards[ui.cardsListField().selectedIndex];
-    card.report = {};
-    card.report.allowDownload = ui.reportAllowField().checked;
-    card.report.format = ui.reportFormatField().value;
-    card.report.objectArray = ui.reportObjectArrayField().value;
+    card.report = newReport;
+  },
+
+  validateReport: (report) => {
+    const errors = [];
+
+    if (typeof report?.allowDownload !== 'boolean') {
+      errors.push('A report must have an allow/disallow download setting.');
+    }
+
+    if (!report?.format) {
+      errors.push('A report must have a format setting.');
+    }
+
+    if (!report?.objectArray && report?.objectArray !== '') {
+      errors.push('A report must have an object array setting (empty string means root object).');
+    }
+    
+    return errors;
   },
 
   export: () => {
@@ -676,7 +904,7 @@ var ui = {
     const newInput = {
       type: 'text',
       label,
-      name: label.slugify(),
+      name: label.slugify('_'),
       value: '',
     };
 
@@ -721,6 +949,7 @@ var ui = {
     newInput.label = `${newInput.label} [clone] #${parseInt(
       Math.random() * 100000
     )}`;
+    newInput.name = newInput.label.slugify('_');
 
     if (!DashboardConfig.cards[cardIndex].input)
       DashboardConfig.cards[cardIndex].input = [];
