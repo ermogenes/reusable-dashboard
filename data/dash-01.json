@@ -12,7 +12,7 @@
         "endpoint": {
           "urlTemplate": "./data/card-text-01.json",
           "method": "GET",
-          "bodyType": "json"
+          "bodyType": "none"
         }
       },
       "visualization": {
