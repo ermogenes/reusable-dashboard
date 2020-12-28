@@ -71,6 +71,11 @@ var engine = {
       }),
 
   loadCard: (card) => {
+    const cardId = `card-${card.title.slugify()}`;
+    if (document.getElementById(cardId)) {
+      return new Promise((resolve) => resolve("skipped"));
+    }
+
     let vars = {};
     if (card.input.length > 0) {
       card.input.forEach((i) => (vars[i.name] = i.value));
@@ -120,14 +125,17 @@ var engine = {
         }
         const cardsContainer = ui.cardsContainer();
         const cardTag = document.createElement('div');
-        cardTag.id = `card-${card.title.slugify()}`;
+        cardTag.id = cardId;
         cardTag.classList.add('card');
         cardTag.innerHTML = cardEvaluation.markup;
-        cardsContainer.appendChild(cardTag);
         cardTag.style.order = card.order;
         cardTag.style.flexBasis = card.baseSize;
         cardTag.style.width = card.baseSize;
-        eval(cardEvaluation.script);
+        
+        if (!document.getElementById(cardTag.id)) {
+          cardsContainer.appendChild(cardTag);
+          eval(cardEvaluation.script);  
+        }
       });
   },
 
