@@ -198,6 +198,7 @@ Os endpoints de leitura e gravação da configuração deverão retornar um obje
     - `type` string com o tipo da visualização:
       - `text` para card de texto;
       - `pie` para card de gráficos de setores/pizza/torta;
+      - `bar` para card de gráficos de barras verticais (funcionalidade experimental);
     - `text` objeto com as configurações para cads de texto:
       - `template` string com o template para exibição do texto, com substituição dos parâmetros de entrada.
     - `pie` objeto com as configurações para cads de gráficos de setores:

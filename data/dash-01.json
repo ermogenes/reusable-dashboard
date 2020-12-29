@@ -55,6 +55,33 @@
       }
     },
     {
+      "order": 1,
+      "title": "Teste de Card de Barras",
+      "baseSize": "200px",
+      "footer": "Dados de teste",
+      "input": [],
+      "ingestion": {
+        "endpoint": {
+          "urlTemplate": "./data/card-pie-01.json",
+          "method": "GET",
+          "bodyType": "none"
+        }
+      },
+      "visualization": {
+        "type": "bar",
+        "bar": {
+          "objectArray": "result.registros",
+          "labelTemplate": "${subprefeitura} em ${ano}",
+          "valueProperty": "quantidade"
+        }
+      },
+      "report": {
+        "allowDownload": true,
+        "objectArray": "result.registros",
+        "format": "csv"
+      }
+    },    
+    {
       "order": 2,
       "title": "Seguidores",
       "baseSize": "200px",
