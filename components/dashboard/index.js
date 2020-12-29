@@ -893,7 +893,7 @@ var ui = {
         endpoint: {
           urlTemplate: 'http(s)://...',
           method: 'GET',
-          bodyType: 'json',
+          bodyType: 'none',
         },
       },
       visualization: {
