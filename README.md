@@ -217,6 +217,8 @@ Os endpoints de leitura e gravação da configuração deverão retornar um obje
       - `xls` para _XLS - Excel 97-2004 (XLS BIFF8)_;
     - `objectArray` string com o nome da propriedade que contém o array de objetos (vazio caso seja a raiz);
 
+🍌 _Se permitir downloads, lembre-se de adicionar os MIME types correspondentes na lista de permissão de seu servidor HTTP._
+
 As configurações podem ser obtidas/alteradas no objeto global `DashboardConfig`.
 
 ## Configuração
