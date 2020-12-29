@@ -76,26 +76,28 @@ var engine = {
       return new Promise((resolve) => resolve("skipped"));
     }
 
+    if (!card.input) card.input = [];
+
     let vars = {};
-    if (card.input.length > 0) {
+    if (card.input?.length > 0) {
       card.input.forEach((i) => (vars[i.name] = i.value));
     }
 
     const request = {};
-    request.method = card.ingestion.endpoint.method || undefined;
+    request.method = card.ingestion?.endpoint?.method || undefined;
 
     if (request.method === 'POST') {
       request.headers = {
         'Content-Type': 'application/json',
       };
-      if (card.ingestion.endpoint.bodyType === 'json') {
+      if (card.ingestion?.endpoint?.bodyType === 'json') {
         request.body = card.ingestion.endpoint.bodyTemplate
           ? JSON.stringify(
               card.ingestion.endpoint.bodyTemplate.interpolate(vars)
             )
           : null;
-      } else if (card.ingestion.endpoint.bodyType === 'graphql') {
-        request.body = card.ingestion.endpoint.bodyTemplate
+      } else if (card.ingestion?.endpoint?.bodyType === 'graphql') {
+        request.body = card.ingestion?.endpoint?.bodyTemplate
           ? JSON.stringify({
               query: `${card.ingestion.endpoint.bodyTemplate.interpolate(
                 vars
@@ -106,7 +108,11 @@ var engine = {
       }
     }
 
-    const url = card.ingestion.endpoint.urlTemplate.interpolate(vars);
+    const url = card.ingestion?.endpoint?.urlTemplate?.interpolate(vars);
+
+    if (!url) {
+      return new Promise((reject) => reject("without url"));
+    }
 
     return fetch(url, request)
       .then((response) => response.json())
@@ -442,7 +448,7 @@ var ui = {
       ui.inputsListField().options.remove(o)
     );
 
-    for (let i = 0; i <= card.input.length - 1; i++) {
+    for (let i = 0; i <= card.input?.length - 1; i++) {
       const input = card.input[i];
       const inputOption = document.createElement('option');
       inputOption.text = input.label;
@@ -453,31 +459,31 @@ var ui = {
     ui.inputsListField().selectedIndex = 0;
     ui.inputsListField().dispatchEvent(new Event('change'));
 
-    ui.ingestionEndpointUrlField().value = card.ingestion.endpoint.urlTemplate;
+    ui.ingestionEndpointUrlField().value = card.ingestion?.endpoint?.urlTemplate || '';
 
-    ui.ingestionEndpointMethodField().value = card.ingestion.endpoint.method;
+    ui.ingestionEndpointMethodField().value = card.ingestion?.endpoint?.method || 'GET';
     ui.ingestionEndpointMethodField().dispatchEvent(new Event('change'));
 
     ui.ingestionEndpointBodyTypeField().value =
-      card.ingestion.endpoint.bodyType;
+      card.ingestion?.endpoint?.bodyType || 'none';
     ui.ingestionEndpointBodyTypeField().dispatchEvent(new Event('change'));
 
-    ui.editor.setValue(card.ingestion.endpoint.bodyTemplate || '');
+    ui.editor.setValue(card.ingestion?.endpoint?.bodyTemplate || '');
 
-    ui.vizTypeField().value = card.visualization.type;
+    ui.vizTypeField().value = card.visualization?.type;
     ui.vizTypeField().dispatchEvent(new Event('change'));
 
-    ui.vizTextTemplateField().value = card.visualization.text?.template || '';
+    ui.vizTextTemplateField().value = card.visualization?.text?.template || '';
 
     ui.vizPieObjectArrayField().value =
-      card.visualization.pie?.objectArray || '';
-    ui.vizPieLabelField().value = card.visualization.pie?.labelTemplate || '';
-    ui.vizPieValueField().value = card.visualization.pie?.valueProperty || '';
+      card.visualization?.pie?.objectArray || '';
+    ui.vizPieLabelField().value = card.visualization?.pie?.labelTemplate || '';
+    ui.vizPieValueField().value = card.visualization?.pie?.valueProperty || '';
 
     ui.vizBarObjectArrayField().value =
-      card.visualization.bar?.objectArray || '';
-    ui.vizBarLabelField().value = card.visualization.bar?.labelTemplate || '';
-    ui.vizBarValueField().value = card.visualization.bar?.valueProperty || '';
+      card.visualization?.bar?.objectArray || '';
+    ui.vizBarLabelField().value = card.visualization?.bar?.labelTemplate || '';
+    ui.vizBarValueField().value = card.visualization?.bar?.valueProperty || '';
 
     ui.reportAllowField().checked = card.report?.allowDownload || false;
     ui.reportFormatField().value = card.report?.format || '';
@@ -492,10 +498,10 @@ var ui = {
     if (inputIndex >= 0) {
       const input = card.input[inputIndex];
 
-      ui.inputTypeField().value = input.type || '';
-      ui.inputLabelField().value = input.label || '';
-      ui.inputNameField().value = input.name || '';
-      ui.inputValueField().value = input.value || '';
+      ui.inputTypeField().value = input?.type || '';
+      ui.inputLabelField().value = input?.label || '';
+      ui.inputNameField().value = input?.name || '';
+      ui.inputValueField().value = input?.value || '';
     } else {
       ui.inputTypeField().value = '';
       ui.inputLabelField().value = '';
