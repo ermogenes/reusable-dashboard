@@ -175,6 +175,7 @@
         <select name="viz-type" id="viz-type">
           <option value="text">Text</option>
           <option value="pie">Pie Chart</option>
+          <option value="bar">Bar Chart (Experimental)</option>
         </select>
 
         <div id="viz-type-text-group">
@@ -209,6 +210,31 @@
             type="text"
             name="viz-pie-value-property"
             id="viz-pie-value-property"
+          />
+        </div>
+
+        <div id="viz-type-bar-group">
+          <label for="viz-bar-object-array-property"
+            >Object array property</label
+          >
+          <input
+            type="text"
+            name="viz-bar-object-array-property"
+            id="viz-bar-object-array-property"
+          />
+
+          <label for="viz-bar-label-template">Label template</label>
+          <input
+            type="text"
+            name="viz-bar-label-template"
+            id="viz-bar-label-template"
+          />
+
+          <label for="viz-bar-value-property">Value property</label>
+          <input
+            type="text"
+            name="viz-bar-value-property"
+            id="viz-bar-value-property"
           />
         </div>
 

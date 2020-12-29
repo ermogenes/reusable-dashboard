@@ -119,6 +119,9 @@ var engine = {
           case 'pie':
             cardEvaluation = viz.buildPieCard(card, cardData);
             break;
+          case 'bar':
+            cardEvaluation = viz.buildBarCard(card, cardData);
+            break;
 
           default:
             break;
@@ -277,6 +280,13 @@ var ui = {
     document.getElementById('viz-pie-object-array-property'),
   vizPieLabelField: () => document.getElementById('viz-pie-label-template'),
   vizPieValueField: () => document.getElementById('viz-pie-value-property'),
+
+  vizBarGroup: () => document.getElementById('viz-type-bar-group'),
+  vizBarObjectArrayField: () =>
+    document.getElementById('viz-bar-object-array-property'),
+  vizBarLabelField: () => document.getElementById('viz-bar-label-template'),
+  vizBarValueField: () => document.getElementById('viz-bar-value-property'),
+
   vizSaveButton: () => document.getElementById('viz-save-button'),
 
   reportConfigForm: () => document.getElementById('form-card-report'),
@@ -464,6 +474,11 @@ var ui = {
     ui.vizPieLabelField().value = card.visualization.pie?.labelTemplate || '';
     ui.vizPieValueField().value = card.visualization.pie?.valueProperty || '';
 
+    ui.vizBarObjectArrayField().value =
+      card.visualization.bar?.objectArray || '';
+    ui.vizBarLabelField().value = card.visualization.bar?.labelTemplate || '';
+    ui.vizBarValueField().value = card.visualization.bar?.valueProperty || '';
+
     ui.reportAllowField().checked = card.report?.allowDownload || false;
     ui.reportFormatField().value = card.report?.format || '';
     ui.reportObjectArrayField().value = card.report?.objectArray || '';
@@ -517,9 +532,15 @@ var ui = {
     if (e.currentTarget.value === 'text') {
       ui.vizTextGroup().style.display = 'flex';
       ui.vizPieGroup().style.display = 'none';
+      ui.vizBarGroup().style.display = 'none';
     } else if (e.currentTarget.value === 'pie') {
       ui.vizTextGroup().style.display = 'none';
       ui.vizPieGroup().style.display = 'flex';
+      ui.vizBarGroup().style.display = 'none';
+    } else if (e.currentTarget.value === 'bar') {
+      ui.vizTextGroup().style.display = 'none';
+      ui.vizPieGroup().style.display = 'none';
+      ui.vizBarGroup().style.display = 'flex';
     }
   },
 
@@ -724,6 +745,13 @@ var ui = {
         valueProperty: ui.vizPieValueField().value.trim(),
       };
       errors = ui.validateVizPie(newViz);
+    } else if (newViz.type === 'bar') {
+      newViz.bar = {
+        objectArray: ui.vizBarObjectArrayField().value.trim(),
+        labelTemplate: ui.vizBarLabelField().value.trim(),
+        valueProperty: ui.vizBarValueField().value.trim(),
+      };
+      errors = ui.validateVizBar(newViz);
     } else {
       errors.push('Visualization type not yet supported.');
     }
@@ -767,6 +795,24 @@ var ui = {
 
     if (!viz?.pie?.labelTemplate) {
       errors.push('A pie visualization must have a label template setting.');
+    }
+
+    return errors;
+  },
+
+  validateVizBar: (viz) => {
+    const errors = [];
+
+    if (viz?.type !== 'bar') {
+      errors.push('Unexpected visualization type setting.');
+    }
+
+    if (!viz?.bar?.objectArray && viz?.bar?.objectArray !== '') {
+      errors.push('A bar visualization must have an object array setting (empty string means root object).');
+    }
+
+    if (!viz?.bar?.labelTemplate) {
+      errors.push('A bar visualization must have a label template setting.');
     }
 
     return errors;
@@ -1159,6 +1205,82 @@ var viz = {
           bindto: '#${cardId}',
           data: {
               type: 'pie',
+              columns: ${JSON.stringify(dataColumns)}
+          }
+      });
+      ${
+        content.downloadFormat
+          ? `document.getElementById('${linkId}').addEventListener('click', ui.reportDownload);`
+          : ''
+      }      
+    `;
+
+    return { markup, script };
+  },
+
+  buildBarCard: (config, data) => {
+    const content = {
+      title: config.title,
+      header: config.header,
+      footer: config.footer,
+      objectArray: viz.getObjectArray(
+        config.visualization?.bar?.objectArray,
+        data
+      ),
+      labelTemplate: config.visualization?.bar?.labelTemplate,
+      valueProperty: config.visualization?.bar?.valueProperty,
+      downloadFormat: config.report?.allowDownload ? config.report?.format : '',
+    };
+
+    const dataColumns = [];
+    const defaultLabel = '-';
+
+    content.objectArray.forEach((line) => {
+      let cleanedLine = {};
+      Object.entries(line).forEach((prop) => {
+        if (!Array.isArray(prop[1]) && typeof prop[1] !== 'function')
+          cleanedLine[prop[0]] = prop[1];
+      });
+
+      const label = content.labelTemplate.interpolate(cleanedLine);
+
+      let i = dataColumns.findIndex(
+        (targetLine) => targetLine[0] === (label || defaultLabel)
+      );
+      if (i < 0) {
+        dataColumns.push([label || defaultLabel]);
+        i = dataColumns.length - 1;
+      }
+
+      dataColumns[i].push(
+        !line[content.valueProperty] ? 1 : line[content.valueProperty]
+      );
+    });
+
+    const randId = Math.round(Math.random() * 10000) + 1;
+    const cardId = `card-c3-${randId}`;
+    const linkId = `report-download-link-${randId}`;
+
+    const markup = `
+      <header>${content.header || content.title || ''}</header>
+      <article id='${cardId}'></article>
+      ${
+        content.downloadFormat
+          ? `<span class="download-link"
+            data-filename="${content.title.slugify()}"
+            data-json='${JSON.stringify(content.objectArray)}'
+            data-format="${content.downloadFormat}"
+            id="${linkId}">${content.downloadFormat}</span>`
+          : ''
+      }      
+      <footer>${content.footer || ''}</footer>
+    `;
+
+    const script = `
+      c3.generate({
+          bindto: '#${cardId}',
+          data: {
+              type: 'bar',
               columns: ${JSON.stringify(dataColumns)}
           }
       });
