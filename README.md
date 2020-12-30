@@ -205,6 +205,10 @@ Os endpoints de leitura e gravação da configuração deverão retornar um obje
       - `objectArray` string com o nome da propriedade que contém o array de objetos (vazio caso seja a raiz);
       - `labelTemplate` string com template dos rótulos dos setores, que será utilizada para agrupar os valores;
       - `valueProperty` string com o nome da propriedade que contém os valores dos setores, que será utilizada para soma das ocorrências (vazio realiza contagem em vez de soma).
+    - `bar` objeto com as configurações para cads de gráficos de barras verticais (funcionalidade experimental):
+      - `objectArray` string com o nome da propriedade que contém o array de objetos (vazio caso seja a raiz);
+      - `labelTemplate` string com template dos rótulos dos setores, que será utilizada para agrupar os valores;
+      - `valueProperty` string com o nome da propriedade que contém os valores dos setores, que será utilizada para soma das ocorrências (vazio realiza contagem em vez de soma).      
   - `report` objeto com informações sobre a disponibilização de relatório:
     - `allowDownload` boolean indicando a liberação do link de download;
     - `format` string com o formato do arquivo para download:
