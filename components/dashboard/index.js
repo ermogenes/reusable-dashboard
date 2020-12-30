@@ -1117,7 +1117,7 @@ var viz = {
       header: config.header,
       footer: config.footer,
       text: config.visualization?.text?.template.interpolate(data),
-      objectArray: config.report?.allowDownload
+      reportObjectArray: config.report?.allowDownload
         ? viz.getObjectArray(config.report?.objectArray, data)
         : [],
       downloadFormat: config.report?.allowDownload ? config.report?.format : '',
@@ -1134,7 +1134,7 @@ var viz = {
       content.downloadFormat
         ? `<span class="download-link"
           data-filename="${content.title.slugify()}"
-          data-json='${JSON.stringify(content.objectArray)}'
+          data-json='${JSON.stringify(content.reportObjectArray)}'
           data-format="${content.downloadFormat}"
           id="${linkId}">${content.downloadFormat}</span>`
         : ''
@@ -1153,7 +1153,7 @@ var viz = {
   getObjectArray: (objectArray, data) => {
     const temp = utils.getPropertyFromObject(objectArray, data);
     if (Array.isArray(temp)) return temp;
-    else if (data) return data;
+    else if (Array.isArray(data)) return data;
     else return [];
   },
 
@@ -1162,8 +1162,12 @@ var viz = {
       title: config.title,
       header: config.header,
       footer: config.footer,
-      objectArray: viz.getObjectArray(
+      vizObjectArray: viz.getObjectArray(
         config.visualization?.pie?.objectArray,
+        data
+      ),
+      reportObjectArray: viz.getObjectArray(
+        config.report?.objectArray,
         data
       ),
       labelTemplate: config.visualization?.pie?.labelTemplate,
@@ -1174,7 +1178,7 @@ var viz = {
     const dataColumns = [];
     const defaultLabel = '-';
 
-    content.objectArray.forEach((line) => {
+    content.vizObjectArray.forEach((line) => {
       let cleanedLine = {};
       Object.entries(line).forEach((prop) => {
         if (!Array.isArray(prop[1]) && typeof prop[1] !== 'function')
@@ -1207,7 +1211,7 @@ var viz = {
         content.downloadFormat
           ? `<span class="download-link"
             data-filename="${content.title.slugify()}"
-            data-json='${JSON.stringify(content.objectArray)}'
+            data-json='${JSON.stringify(content.reportObjectArray)}'
             data-format="${content.downloadFormat}"
             id="${linkId}">${content.downloadFormat}</span>`
           : ''
@@ -1238,8 +1242,12 @@ var viz = {
       title: config.title,
       header: config.header,
       footer: config.footer,
-      objectArray: viz.getObjectArray(
+      vizObjectArray: viz.getObjectArray(
         config.visualization?.bar?.objectArray,
+        data
+      ),
+      reportObjectArray: viz.getObjectArray(
+        config.report?.objectArray,
         data
       ),
       labelTemplate: config.visualization?.bar?.labelTemplate,
@@ -1250,7 +1258,7 @@ var viz = {
     const dataColumns = [];
     const defaultLabel = '-';
 
-    content.objectArray.forEach((line) => {
+    content.vizObjectArray.forEach((line) => {
       let cleanedLine = {};
       Object.entries(line).forEach((prop) => {
         if (!Array.isArray(prop[1]) && typeof prop[1] !== 'function')
@@ -1283,7 +1291,7 @@ var viz = {
         content.downloadFormat
           ? `<span class="download-link"
             data-filename="${content.title.slugify()}"
-            data-json='${JSON.stringify(content.objectArray)}'
+            data-json='${JSON.stringify(content.reportObjectArray)}'
             data-format="${content.downloadFormat}"
             id="${linkId}">${content.downloadFormat}</span>`
           : ''
