@@ -183,7 +183,12 @@ var engine = {
   getConfigFromServer: () =>
     fetch(EngineConfig.endpoints.dashboard.url, {
       method: EngineConfig.endpoints.dashboard.method || undefined,
-    }).then((response) => response.json()),
+    }).then((response) => response.json())
+    .catch((error) => 
+      Promise.reject(
+        new Error(`<p>Não foi possível obter dados válidos a partir da URL de configuração.</p>
+        <p>${error.message}</p>`))
+      ),
 
   reloadConfiguration: () =>
     engine.getConfigFromServer().then((data) => engine.restart(data)),
@@ -1098,7 +1103,11 @@ var ui = {
   showMessage: (message) => {
     // Implement here your UX messaging strategy
     alert(message);
-  }
+  },
+
+  dashboardLoadError: (message) => {
+    ui.container().innerHTML = message || '';
+  },
 };
 
 var viz = {
@@ -1309,5 +1318,8 @@ const loadDashboard = (engineConfig) => {
   engine
     .preload()
     .then(() => engine.getConfigFromServer())
-    .then((data) => engine.start(data));
+    .then((data) => engine.start(data))
+    .catch((error) => ui.dashboardLoadError(`<p>Erro ao criar o dashboard.</p>
+        <p>${error.message}</p>
+    <p>Reveja sua configuração.<p>`));
 };
