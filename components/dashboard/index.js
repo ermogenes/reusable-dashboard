@@ -143,7 +143,11 @@ var engine = {
 
         if (!document.getElementById(cardTag.id)) {
           cardsContainer.appendChild(cardTag);
-          eval(cardEvaluation.script);  
+          eval(cardEvaluation.script);
+
+          const linkContainer = cardsContainer.appendChild(cardTag);
+          linkContainer.querySelector('.download-link')
+            .addEventListener('click', ui.reportDownload);
         }
       })
       .catch((error) => {
@@ -1141,12 +1145,6 @@ var viz = {
     }
     <footer>${content.footer || 'no footer'}</footer>`;
 
-    const script = `${
-      content.downloadFormat
-        ? `document.getElementById('${linkId}').addEventListener('click', ui.reportDownload);`
-        : ''
-    }`;
-
     return { markup, script };
   },
 
@@ -1227,12 +1225,7 @@ var viz = {
               columns: ${JSON.stringify(dataColumns)}
           }
       });
-      ${
-        content.downloadFormat
-          ? `document.getElementById('${linkId}').addEventListener('click', ui.reportDownload);`
-          : ''
-      }      
-    `;
+      `;
 
     return { markup, script };
   },
@@ -1307,12 +1300,7 @@ var viz = {
               columns: ${JSON.stringify(dataColumns)}
           }
       });
-      ${
-        content.downloadFormat
-          ? `document.getElementById('${linkId}').addEventListener('click', ui.reportDownload);`
-          : ''
-      }      
-    `;
+      `;
 
     return { markup, script };
   },
